@@ -1,0 +1,20 @@
+{
+  "name": "@nrfcloud/location-services-tests",
+  "version": "0.0.0-development",
+  "description": "Tests requests for the nRF Connect for Cloud location services",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "nRF Connect for Cloud",
+    "Location",
+    "Services"
+  ],
+  "author": "Nordic Semiconductor ASA | https://nordicsemi.com",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^27.0.5",
+    "prettier": "^2.3.1"
+  }
+}
