@@ -7,7 +7,7 @@ Provides test requests for
 - [AGPS](https://api.nrfcloud.com/v1#operation/GetAssistanceData)
 - [PGPS](https://api.nrfcloud.com/v1#operation/GetPredictedAssistanceData)
 
-Configure the `API_KEY` environment variable. 
+Configure the `API_KEY` environment variable.
 
     npm ci
     npm run test
