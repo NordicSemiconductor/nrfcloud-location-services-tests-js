@@ -3,7 +3,9 @@ const { URL } = require("url");
 const querystring = require("querystring");
 
 const apiKey = process.env.API_KEY;
-const apiHost = process.env.API_HOST ?? "https://api.nrfcloud.com";
+let apiHost = process.env.API_HOST;
+if (apiHost === undefined || apiHost.length === 0)
+  apiHost = "https://api.nrfcloud.com";
 
 module.exports.post = (resource, payload) =>
   new Promise((resolve, reject) => {
