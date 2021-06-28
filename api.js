@@ -48,7 +48,7 @@ module.exports.post = (resource, payload) =>
     req.end();
   });
 
-module.exports.get = (resource, payload) =>
+module.exports.get = (resource, payload, headers = {}) =>
   new Promise((resolve, reject) => {
     const options = {
       hostname: new URL(apiHost).hostname,
@@ -56,6 +56,7 @@ module.exports.get = (resource, payload) =>
       path: `/v1/${resource}?${querystring.stringify(payload)}`,
       headers: {
         Authorization: `Bearer ${apiKey}`,
+        ...headers,
       },
     };
 
@@ -67,6 +68,7 @@ module.exports.get = (resource, payload) =>
       });
 
       res.on("end", () => {
+        const isJSON = res.headers["content-type"].includes("application/json");
         console.debug(
           [
             `> GET https://${
@@ -74,13 +76,14 @@ module.exports.get = (resource, payload) =>
             }/v1/${resource}?${querystring.stringify(payload)}`,
             "",
             `< ${res.statusCode} ${res.statusMessage}`,
-            `${response.join("")}`,
+            `${isJSON ? response.join("") : "(binary data)"}`,
           ].join("\n")
         );
 
-        if (res.statusCode !== 200)
+        if (res.statusCode > 399)
           return reject(new Error(`Request failed: ${res.statusCode}`));
-        resolve(JSON.parse(response.join("")));
+        if (isJSON) return resolve(JSON.parse(response.join("")));
+        return resolve(response.join(""));
       });
     });
     req.on("error", reject);

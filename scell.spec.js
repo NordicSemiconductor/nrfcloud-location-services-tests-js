@@ -1,6 +1,6 @@
 const { get } = require("./api");
 
-describe.only("SCELL", () => {
+describe("SCELL", () => {
   it.each([
     [
       {
