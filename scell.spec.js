@@ -10,10 +10,9 @@ describe("SCELL", () => {
         eci: 33703712,
       },
       {
-        alt: 0,
-        lat: 63.418229,
-        lon: 10.406106,
-        uncertainty: 4133,
+        lat: 63.418807,
+        lon: 10.412916,
+        uncertainty: 4476,
       },
     ],
   ])("should resolve %j to %j", async (cell, expectedLocation) => {

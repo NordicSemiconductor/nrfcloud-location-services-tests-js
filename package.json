@@ -4,7 +4,7 @@
   "description": "Tests requests for the nRF Connect for Cloud location services",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "keywords": [
     "nRF Connect for Cloud",
