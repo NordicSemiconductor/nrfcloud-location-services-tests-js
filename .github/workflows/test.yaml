@@ -9,7 +9,7 @@ on:
       api_host:
         description: "API host"
         required: true
-        default: "https://api.nrfcloud.com"
+        default: "https://api.feature.nrfcloud.com"
 
 env:
   API_KEY: ${{ secrets.API_KEY }}

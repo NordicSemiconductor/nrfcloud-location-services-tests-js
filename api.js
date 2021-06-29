@@ -5,7 +5,7 @@ const querystring = require("querystring");
 const apiKey = process.env.API_KEY;
 let apiHost = process.env.API_HOST;
 if (apiHost === undefined || apiHost.length === 0)
-  apiHost = "https://api.nrfcloud.com";
+  apiHost = "https://api.feature.nrfcloud.com";
 
 module.exports.post = (resource, payload) =>
   new Promise((resolve, reject) => {
