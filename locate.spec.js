@@ -18,7 +18,7 @@ describe("multi-cell location", () => {
           },
         ],
       },
-      { location: { lat: 63.418229, lng: 10.406106 }, accuracy: 2066.0 },
+      { location: { lat: 63.418807, lng: 10.412916 }, accuracy: 2238 },
     ],
     [
       {
@@ -43,7 +43,13 @@ describe("multi-cell location", () => {
           },
         ],
       },
-      { location: { lat: 63.419743, lng: 10.415278 }, accuracy: 1192.0 },
+      {
+        accuracy: 2139,
+        location: {
+          lat: 63.42811704,
+          lng: 10.33457279,
+        },
+      },
     ],
     [
       {
@@ -86,7 +92,13 @@ describe("multi-cell location", () => {
           },
         ],
       },
-      { location: { lat: 63.420022, lng: 10.420556 }, accuracy: 1192.0 },
+      {
+        accuracy: 2139,
+        location: {
+          lat: 63.42811704,
+          lng: 10.33457279,
+        },
+      },
     ],
     [
       {
@@ -136,10 +148,10 @@ describe("multi-cell location", () => {
         ],
       },
       {
-        accuracy: 439.0,
+        accuracy: 440,
         location: {
-          lat: 63.421306,
-          lng: 10.438087,
+          lat: 63.42557256,
+          lng: 10.43830085,
         },
       },
     ],
