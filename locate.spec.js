@@ -35,7 +35,6 @@ describe("multi-cell location", () => {
             nmr: [
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 426,
                 rsrp: 39,
                 rsrq: 4,
@@ -61,28 +60,24 @@ describe("multi-cell location", () => {
             nmr: [
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 426,
                 rsrp: 40,
                 rsrq: 4,
               },
               {
                 earfcn: 100,
-                timeDiff: -1897,
                 pci: 419,
                 rsrp: 21,
                 rsrq: 19,
               },
               {
                 earfcn: 1650,
-                timeDiff: -1888,
                 pci: 100,
                 rsrp: 29,
                 rsrq: 14,
               },
               {
                 earfcn: 1650,
-                timeDiff: -1888,
                 pci: 212,
                 rsrp: 23,
                 rsrq: 3,
@@ -108,35 +103,30 @@ describe("multi-cell location", () => {
             nmr: [
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 194,
                 rsrp: 42,
                 rsrq: 6,
               },
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 428,
                 rsrp: 41,
                 rsrq: 5,
               },
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 63,
                 rsrp: 41,
                 rsrq: 4,
               },
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 140,
                 rsrp: 36,
                 rsrq: -2,
               },
               {
                 earfcn: 6300,
-                timeDiff: 0,
                 pci: 205,
                 rsrp: 36,
                 rsrq: -2,
