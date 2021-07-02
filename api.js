@@ -16,7 +16,7 @@ module.exports.post = (resource, payload) =>
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json; charset=utf-8",
+        "Content-Type": "application/json",
       },
     };
 
