@@ -170,9 +170,11 @@ describe("single-cell location", () => {
         cid: 33703712,
       },
       {
-        lat: 63.418807,
-        lon: 10.412916,
-        uncertainty: 4476,
+        accuracy: 2416,
+        location: {
+          lat: 63.42373967,
+          lng: 10.38332462,
+        },
       },
     ],
   ])("should resolve %j to %j", async (cell, expectedLocation) => {
