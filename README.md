@@ -2,8 +2,7 @@
 
 Provides test requests for
 
-- [SCELL](https://api.feature.nrfcloud.com/v1#operation/GetSingleCellLocation)
-- [MCELL](https://api.feature.nrfcloud.com/v1#operation/GetMultiCellLocations)
+- [LOCATE](https://api.feature.nrfcloud.com/v1#operation/LocateDevice)
 - [AGPS](https://api.feature.nrfcloud.com/v1#operation/GetAssistanceData)
 - [PGPS](https://api.feature.nrfcloud.com/v1#operation/GetPredictedAssistanceData)
 

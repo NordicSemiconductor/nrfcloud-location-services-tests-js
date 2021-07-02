@@ -1,6 +1,6 @@
 const { post } = require("./api");
 
-describe("MCELL", () => {
+describe("multi-cell location", () => {
   it.each([
     [
       {
@@ -154,8 +154,32 @@ describe("MCELL", () => {
       },
     ],
   ])("should resolve %j to %j", async (cellTowers, expectedLocation) => {
-    expect(await post("location/multi-cell", cellTowers)).toMatchObject(
+    expect(await post("location/locate/test-device", cellTowers)).toMatchObject(
       expectedLocation
     );
+  });
+});
+
+describe("single-cell location", () => {
+  it.each([
+    [
+      {
+        mcc: 242,
+        mnc: 2,
+        tac: 2305,
+        eci: 33703712,
+      },
+      {
+        lat: 63.418807,
+        lon: 10.412916,
+        uncertainty: 4476,
+      },
+    ],
+  ])("should resolve %j to %j", async (cell, expectedLocation) => {
+    expect(
+      await post("location/locate/test-device", {
+        lte: [cell],
+      })
+    ).toMatchObject(expectedLocation);
   });
 });
