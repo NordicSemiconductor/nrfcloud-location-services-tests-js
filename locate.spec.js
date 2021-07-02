@@ -164,10 +164,10 @@ describe("single-cell location", () => {
   it.each([
     [
       {
-        mcc: 242,
-        mnc: 2,
+        mcc: "242",
+        mnc: "002",
         tac: 2305,
-        eci: 33703712,
+        cid: 33703712,
       },
       {
         lat: 63.418807,
