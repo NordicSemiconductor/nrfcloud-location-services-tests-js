@@ -1,5 +1,50 @@
 const { post } = require("./api");
 
+const inRange = (received, expected, delta = 0.5) => {
+  const floor = expected - delta;
+  const ceiling = expected + delta;
+  return floor <= received <= ceiling;
+};
+
+expect.extend({
+  toMatchLocation: (
+    { accuracy, location: { lat, lng } },
+    {
+      accuracy: expectedAccuracy,
+      location: { lat: expectedLat, lng: expectedLng },
+    }
+  ) => {
+    const passAccuracy = inRange(accuracy, expectedAccuracy, 1000);
+    const passLat = inRange(lat, expectedLat);
+    const passLng = inRange(lng, expectedLng);
+    if (passAccuracy && passLat && passLng) {
+      return {
+        message: () =>
+          `expected ${{
+            accuracy,
+            location: { lat, lng },
+          }} not to match location ${{
+            accuracy: expectedAccuracy,
+            location: { lat: expectedLat, lng: expectedLng },
+          }}`,
+        pass: true,
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${{
+            accuracy,
+            location: { lat, lng },
+          }} to match location ${{
+            accuracy: expectedAccuracy,
+            location: { lat: expectedLat, lng: expectedLng },
+          }}`,
+        pass: false,
+      };
+    }
+  },
+});
+
 describe("multi-cell location", () => {
   it.each([
     [
@@ -156,9 +201,9 @@ describe("multi-cell location", () => {
       },
     ],
   ])("should resolve %j to %j", async (cellTowers, expectedLocation) => {
-    expect(await post("location/locate/test-device", cellTowers)).toMatchObject(
-      expectedLocation
-    );
+    expect(
+      await post("location/locate/test-device", cellTowers)
+    ).toMatchLocation(expectedLocation);
   });
 });
 
@@ -184,6 +229,6 @@ describe("single-cell location", () => {
       await post("location/locate/test-device", {
         lte: [cell],
       })
-    ).toMatchObject(expectedLocation);
+    ).toMatchLocation(expectedLocation);
   });
 });
