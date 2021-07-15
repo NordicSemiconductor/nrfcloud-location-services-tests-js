@@ -89,3 +89,35 @@ module.exports.get = (resource, payload, headers = {}) =>
     req.on("error", reject);
     req.end();
   });
+
+module.exports.head = (resource, payload, headers = {}) =>
+  new Promise((resolve, reject) => {
+    const options = {
+      hostname: new URL(apiHost).hostname,
+      port: 443,
+      path: `/v1/${resource}?${querystring.stringify(payload)}`,
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        ...headers,
+      },
+      method: "HEAD",
+    };
+
+    const req = https.request(options, (res) => {
+      console.debug(
+        [
+          `> HEAD https://${
+            new URL(apiHost).hostname
+          }/v1/${resource}?${querystring.stringify(payload)}`,
+          `< ${res.statusCode} ${res.statusMessage}`,
+          ...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+        ].join("\n")
+      );
+
+      if (res.statusCode > 399)
+        return reject(new Error(`Request failed: ${res.statusCode}`));
+      return resolve(res.headers);
+    });
+    req.on("error", reject);
+    req.end();
+  });
