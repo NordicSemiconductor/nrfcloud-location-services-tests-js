@@ -9,11 +9,14 @@ on:
       api_host:
         description: "API host"
         required: true
-        default: "https://api.feature.nrfcloud.com"
+        default: "https://api.beta.nrfcloud.com"
 
 env:
-  API_KEY: ${{ secrets.API_KEY }}
   API_HOST: ${{ github.event.inputs.api_host }}
+  TEAM_ID: ${{ secrets.TEAM_ID }}
+  AGPS_SERVICE_KEY: ${{ secrets.AGPS_SERVICE_KEY }}
+  PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}
+  CELLGEO_SERVICE_KEY: ${{ secrets.CELLGEO_SERVICE_KEY }}
 
 jobs:
   tests:

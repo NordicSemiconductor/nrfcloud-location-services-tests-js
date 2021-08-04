@@ -1,13 +1,16 @@
 const https = require("https");
 const { URL } = require("url");
 const querystring = require("querystring");
+const jwt = require("jsonwebtoken");
 
-const apiKey = process.env.API_KEY;
 let apiHost = process.env.API_HOST;
 if (apiHost === undefined || apiHost.length === 0)
-  apiHost = "https://api.feature.nrfcloud.com";
+  apiHost = "https://api.beta.nrfcloud.com";
 
-module.exports.post = (resource, payload) =>
+const token = (tokenKey, payload) =>
+  jwt.sign(payload, tokenKey, { algorithm: "ES256" });
+
+module.exports.post = (tokenKey, tokenPayload) => (resource, payload) =>
   new Promise((resolve, reject) => {
     const options = {
       hostname: new URL(apiHost).hostname,
@@ -15,7 +18,7 @@ module.exports.post = (resource, payload) =>
       path: `/v1/${resource}`,
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
         "Content-Type": "application/json",
       },
     };
@@ -48,76 +51,81 @@ module.exports.post = (resource, payload) =>
     req.end();
   });
 
-module.exports.get = (resource, payload, headers = {}) =>
-  new Promise((resolve, reject) => {
-    const options = {
-      hostname: new URL(apiHost).hostname,
-      port: 443,
-      path: `/v1/${resource}?${querystring.stringify(payload)}`,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        ...headers,
-      },
-    };
+module.exports.get =
+  (tokenKey, tokenPayload) =>
+  (resource, payload, headers = {}) =>
+    new Promise((resolve, reject) => {
+      const options = {
+        hostname: new URL(apiHost).hostname,
+        port: 443,
+        path: `/v1/${resource}?${querystring.stringify(payload)}`,
+        headers: {
+          Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
+          ...headers,
+        },
+      };
 
-    const req = https.get(options, (res) => {
-      let response = [];
+      const req = https.get(options, (res) => {
+        let response = [];
 
-      res.on("data", (d) => {
-        response.push(d.toString());
+        res.on("data", (d) => {
+          response.push(d.toString());
+        });
+
+        res.on("end", () => {
+          const isJSON =
+            res.headers["content-type"].includes("application/json");
+          console.debug(
+            [
+              `> GET https://${
+                new URL(apiHost).hostname
+              }/v1/${resource}?${querystring.stringify(payload)}`,
+              "",
+              `< ${res.statusCode} ${res.statusMessage}`,
+              `${isJSON ? response.join("") : "(binary data)"}`,
+            ].join("\n")
+          );
+
+          if (res.statusCode > 399)
+            return reject(new Error(`Request failed: ${res.statusCode}`));
+          if (isJSON) return resolve(JSON.parse(response.join("")));
+          return resolve(response.join(""));
+        });
       });
+      req.on("error", reject);
+      req.end();
+    });
 
-      res.on("end", () => {
-        const isJSON = res.headers["content-type"].includes("application/json");
+module.exports.head =
+  (tokenKey, tokenPayload) =>
+  (resource, payload, headers = {}) =>
+    new Promise((resolve, reject) => {
+      const options = {
+        hostname: new URL(apiHost).hostname,
+        port: 443,
+        path: `/v1/${resource}?${querystring.stringify(payload)}`,
+        headers: {
+          Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
+          ...headers,
+        },
+        method: "HEAD",
+      };
+
+      const req = https.request(options, (res) => {
         console.debug(
           [
-            `> GET https://${
+            `> HEAD https://${
               new URL(apiHost).hostname
             }/v1/${resource}?${querystring.stringify(payload)}`,
-            "",
             `< ${res.statusCode} ${res.statusMessage}`,
-            `${isJSON ? response.join("") : "(binary data)"}`,
+            ...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
           ].join("\n")
         );
 
         if (res.statusCode > 399)
           return reject(new Error(`Request failed: ${res.statusCode}`));
-        if (isJSON) return resolve(JSON.parse(response.join("")));
-        return resolve(response.join(""));
+        return resolve(res.headers);
       });
+      req.on("error", reject);
+      req.end();
     });
-    req.on("error", reject);
-    req.end();
-  });
-
-module.exports.head = (resource, payload, headers = {}) =>
-  new Promise((resolve, reject) => {
-    const options = {
-      hostname: new URL(apiHost).hostname,
-      port: 443,
-      path: `/v1/${resource}?${querystring.stringify(payload)}`,
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        ...headers,
-      },
-      method: "HEAD",
-    };
-
-    const req = https.request(options, (res) => {
-      console.debug(
-        [
-          `> HEAD https://${
-            new URL(apiHost).hostname
-          }/v1/${resource}?${querystring.stringify(payload)}`,
-          `< ${res.statusCode} ${res.statusMessage}`,
-          ...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
-        ].join("\n")
-      );
-
-      if (res.statusCode > 399)
-        return reject(new Error(`Request failed: ${res.statusCode}`));
-      return resolve(res.headers);
-    });
-    req.on("error", reject);
-    req.end();
-  });

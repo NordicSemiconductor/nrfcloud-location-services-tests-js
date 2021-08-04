@@ -1,4 +1,4 @@
-const { get, head } = require("./api");
+const api = require("./api");
 
 const agpsReq = {
   deviceIdentifier: "TestClient",
@@ -9,10 +9,18 @@ const agpsReq = {
   requestType: "rtAssistance",
 };
 
+const get = api.get(process.env.AGPS_SERVICE_KEY, {
+  aud: process.env.TEAM_ID,
+});
+
+const head = api.head(process.env.AGPS_SERVICE_KEY, {
+  aud: process.env.TEAM_ID,
+});
+
 describe("AGPS", () => {
   let chunkSize;
   it("should describe length of A-GPS data", async () => {
-    const res = await head("location/agps", agpsReq);
+    const res = await head("location/agps", agpsReq, undefined);
     chunkSize = parseInt(res["content-length"], 10);
     expect(chunkSize).toBeGreaterThan(0);
   });
@@ -27,7 +35,6 @@ describe("AGPS", () => {
     const res = await get(
       "location/agps",
       {
-        deviceIdentifier: "TestClient",
         mcc: 242,
         mnc: 2,
         eci: 33703712,

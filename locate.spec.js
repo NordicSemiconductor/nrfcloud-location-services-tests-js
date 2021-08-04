@@ -1,4 +1,8 @@
-const { post } = require("./api");
+const api = require("./api");
+
+const post = api.post(process.env.CELLGEO_SERVICE_KEY, {
+  aud: process.env.TEAM_ID,
+});
 
 const inRange = (received, expected, delta = 0.5) => {
   const floor = expected - delta;
@@ -201,9 +205,9 @@ describe("multi-cell location", () => {
       },
     ],
   ])("should resolve %j to %j", async (cellTowers, expectedLocation) => {
-    expect(
-      await post("location/locate/test-device", cellTowers)
-    ).toMatchLocation(expectedLocation);
+    expect(await post("location/locate", cellTowers)).toMatchLocation(
+      expectedLocation
+    );
   });
 });
 
@@ -226,7 +230,7 @@ describe("single-cell location", () => {
     ],
   ])("should resolve %j to %j", async (cell, expectedLocation) => {
     expect(
-      await post("location/locate/test-device", {
+      await post("location/locate", {
         lte: [cell],
       })
     ).toMatchLocation(expectedLocation);

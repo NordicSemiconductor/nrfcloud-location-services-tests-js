@@ -1,11 +1,11 @@
-const { get } = require("./api");
+const api = require("./api");
 const https = require("https");
-const { promisify } = require("util");
+
+const get = api.get(process.env.PGPS_SERVICE_KEY, { aud: process.env.TEAM_ID });
 
 describe("PGPS", () => {
   it("should return predicted assistance GPS data", async () => {
     const res = await get("location/pgps", {
-      deviceIdentifier: "TestClient",
       predictionCount: 6,
       predictionIntervalMinutes: 120,
     });
@@ -16,7 +16,11 @@ describe("PGPS", () => {
       https
         .get(`https://${res.host}/${res.path}`, (res) => {
           res.on("data", (data) =>
-            resolve({ statusCode: res.statusCode, headers: res.headers, data })
+            resolve({
+              statusCode: res.statusCode,
+              headers: res.headers,
+              data,
+            })
           );
         })
         .on("error", reject)
