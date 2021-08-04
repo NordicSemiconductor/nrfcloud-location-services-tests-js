@@ -12,24 +12,23 @@ const inRange = (received, expected, delta = 0.5) => {
 
 expect.extend({
   toMatchLocation: (
-    { accuracy, location: { lat, lng } },
-    {
-      accuracy: expectedAccuracy,
-      location: { lat: expectedLat, lng: expectedLng },
-    }
+    { uncertainty, lat, lon },
+    { uncertainty: expectedAccuracy, lat: expectedLat, lon: expectedLng }
   ) => {
-    const passAccuracy = inRange(accuracy, expectedAccuracy, 1000);
+    const passAccuracy = inRange(uncertainty, expectedAccuracy, 1000);
     const passLat = inRange(lat, expectedLat);
-    const passLng = inRange(lng, expectedLng);
+    const passLng = inRange(lon, expectedLng);
     if (passAccuracy && passLat && passLng) {
       return {
         message: () =>
           `expected ${{
-            accuracy,
-            location: { lat, lng },
+            uncertainty,
+            lat,
+            lon,
           }} not to match location ${{
-            accuracy: expectedAccuracy,
-            location: { lat: expectedLat, lng: expectedLng },
+            uncertainty: expectedAccuracy,
+            lat: expectedLat,
+            lon: expectedLng,
           }}`,
         pass: true,
       };
@@ -37,11 +36,13 @@ expect.extend({
       return {
         message: () =>
           `expected ${{
-            accuracy,
-            location: { lat, lng },
+            uncertainty,
+            lat,
+            lon,
           }} to match location ${{
-            accuracy: expectedAccuracy,
-            location: { lat: expectedLat, lng: expectedLng },
+            uncertainty: expectedAccuracy,
+            lat: expectedLat,
+            lon: expectedLng,
           }}`,
         pass: false,
       };
@@ -57,7 +58,7 @@ describe("multi-cell location", () => {
           {
             mcc: 242,
             mnc: 2,
-            cid: 33703712,
+            eci: 33703712,
             tac: 2305,
             earfcn: 6300,
             adv: 97,
@@ -67,7 +68,7 @@ describe("multi-cell location", () => {
           },
         ],
       },
-      { location: { lat: 63.418807, lng: 10.412916 }, accuracy: 2238 },
+      { lat: 63.418807, lon: 10.412916, uncertainty: 2238 },
     ],
     [
       {
@@ -75,7 +76,7 @@ describe("multi-cell location", () => {
           {
             mcc: 242,
             mnc: 2,
-            cid: 33703712,
+            eci: 33703712,
             tac: 2305,
             earfcn: 6300,
             adv: 65535,
@@ -93,11 +94,9 @@ describe("multi-cell location", () => {
         ],
       },
       {
-        accuracy: 2139,
-        location: {
-          lat: 63.42811704,
-          lng: 10.33457279,
-        },
+        uncertainty: 2139,
+        lat: 63.42811704,
+        lon: 10.33457279,
       },
     ],
     [
@@ -106,7 +105,7 @@ describe("multi-cell location", () => {
           {
             mcc: 242,
             mnc: 2,
-            cid: 33703712,
+            eci: 33703712,
             tac: 2305,
             earfcn: 6300,
             adv: 65535,
@@ -142,11 +141,9 @@ describe("multi-cell location", () => {
         ],
       },
       {
-        accuracy: 2139,
-        location: {
-          lat: 63.42811704,
-          lng: 10.33457279,
-        },
+        uncertainty: 2139,
+        lat: 63.42811704,
+        lon: 10.33457279,
       },
     ],
     [
@@ -155,7 +152,7 @@ describe("multi-cell location", () => {
           {
             mcc: 242,
             mnc: 2,
-            cid: 35496972,
+            eci: 35496972,
             tac: 2305,
             earfcn: 6300,
             adv: 65535,
@@ -197,15 +194,13 @@ describe("multi-cell location", () => {
         ],
       },
       {
-        accuracy: 440,
-        location: {
-          lat: 63.42557256,
-          lng: 10.43830085,
-        },
+        uncertainty: 440,
+        lat: 63.42557256,
+        lon: 10.43830085,
       },
     ],
   ])("should resolve %j to %j", async (cellTowers, expectedLocation) => {
-    expect(await post("location/locate", cellTowers)).toMatchLocation(
+    expect(await post("location/cell", cellTowers)).toMatchLocation(
       expectedLocation
     );
   });
@@ -218,19 +213,17 @@ describe("single-cell location", () => {
         mcc: 242,
         mnc: 2,
         tac: 2305,
-        cid: 33703712,
+        eci: 33703712,
       },
       {
-        accuracy: 2416,
-        location: {
-          lat: 63.42373967,
-          lng: 10.38332462,
-        },
+        uncertainty: 2416,
+        lat: 63.42373967,
+        lon: 10.38332462,
       },
     ],
   ])("should resolve %j to %j", async (cell, expectedLocation) => {
     expect(
-      await post("location/locate", {
+      await post("location/cell", {
         lte: [cell],
       })
     ).toMatchLocation(expectedLocation);
