@@ -35,8 +35,10 @@ module.exports.post = (tokenKey, tokenPayload) => (resource, payload) =>
           [
             `> POST https://${new URL(apiHost).hostname}/v1/${resource}`,
             `${JSON.stringify(payload)}`,
+            ...Object.entries(options.headers).map(([k, v]) => `> ${k}: ${v}`),
             "",
             `< ${res.statusCode} ${res.statusMessage}`,
+            ...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
             `${response.join("")}`,
           ].join("\n")
         );
@@ -80,9 +82,17 @@ module.exports.get =
               `> GET https://${
                 new URL(apiHost).hostname
               }/v1/${resource}?${querystring.stringify(payload)}`,
+              ...Object.entries(options.headers).map(
+                ([k, v]) => `> ${k}: ${v}`
+              ),
               "",
               `< ${res.statusCode} ${res.statusMessage}`,
-              `${isJSON ? response.join("") : "(binary data)"}`,
+              ...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+              `${
+                isJSON
+                  ? response.join("")
+                  : `(${response.join("").length} bytes binary data)`
+              }`,
             ].join("\n")
           );
 

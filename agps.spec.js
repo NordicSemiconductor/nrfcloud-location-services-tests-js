@@ -49,4 +49,27 @@ describe("AGPS", () => {
     );
     expect(res.length).toBeLessThan(2000);
   });
+  describe("should support 9 types", () => {
+    it.each([[1], [2], [3], [4], [5], [6], [7], [8], [9]])(
+      "should resolve custom type %d",
+      async (type) => {
+        const res = await get(
+          "location/agps",
+          {
+            mcc: 242,
+            mnc: 2,
+            eci: 33703712,
+            tac: 2305,
+            requestType: "custom",
+            customTypes: type,
+          },
+          {
+            "Content-Type": "application/octet-stream",
+            Range: `bytes=0-2000`,
+          }
+        );
+        expect(res.length).toBeGreaterThan(0);
+      }
+    );
+  });
 });
