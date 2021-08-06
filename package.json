@@ -1,13 +1,13 @@
 {
   "name": "@nrfcloud/location-services-tests",
   "version": "0.0.0-development",
-  "description": "Tests requests for the nRF Connect for Cloud location services",
+  "description": "Tests requests for the nRF Cloud location services",
   "main": "index.js",
   "scripts": {
     "test": "jest --verbose"
   },
   "keywords": [
-    "nRF Connect for Cloud",
+    "nRF Cloud",
     "Location",
     "Services"
   ],

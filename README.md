@@ -1,4 +1,4 @@
-# nRF Connect for Cloud Location Services tests
+# nRF Cloud Location Services tests
 
 Provides test requests for
 
