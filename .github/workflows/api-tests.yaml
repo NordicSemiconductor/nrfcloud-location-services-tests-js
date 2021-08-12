@@ -1,4 +1,4 @@
-name: Run tests
+name: Run nRF Cloud Location Service API tests
 
 on:
   push:
@@ -27,4 +27,4 @@ jobs:
           node-version: "16.x"
       - uses: actions/checkout@v2
       - run: npm ci
-      - run: npm test
+      - run: npm run api:tests
