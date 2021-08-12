@@ -32,10 +32,13 @@ export const apiClient = ({
 		payload: Record<string, any>,
 	) => Promise<Record<string, any>>
 } => {
+	const e = new URL(
+		endpoint?.length === 0 ? DEFAULT_ENDPOINT : endpoint ?? DEFAULT_ENDPOINT,
+	)
 	const post = async (resource: string, payload: Record<string, any>) =>
 		new Promise<Record<string, any>>((resolve, reject) => {
 			const options = {
-				hostname: new URL(endpoint ?? DEFAULT_ENDPOINT).hostname,
+				hostname: e.hostname,
 				port: 443,
 				path: `/v1/${resource}`,
 				method: 'POST',
@@ -55,9 +58,7 @@ export const apiClient = ({
 				res.on('end', () => {
 					console.debug(
 						[
-							`> POST https://${
-								new URL(endpoint ?? DEFAULT_ENDPOINT).hostname
-							}/v1/${resource}`,
+							`> POST https://${e.hostname}/v1/${resource}`,
 							`${JSON.stringify(payload)}`,
 							...Object.entries(options.headers).map(
 								([k, v]) => `> ${k}: ${v}`,
@@ -86,7 +87,7 @@ export const apiClient = ({
 	) =>
 		new Promise<Buffer>((resolve, reject) => {
 			const options = {
-				hostname: new URL(endpoint ?? DEFAULT_ENDPOINT).hostname,
+				hostname: e.hostname,
 				port: 443,
 				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
 				headers: {
@@ -105,9 +106,9 @@ export const apiClient = ({
 				res.on('end', () => {
 					console.debug(
 						[
-							`> GET https://${
-								new URL(endpoint ?? DEFAULT_ENDPOINT).hostname
-							}/v1/${resource}?${new URLSearchParams(payload).toString()}`,
+							`> GET https://${e.hostname}/v1/${resource}?${new URLSearchParams(
+								payload,
+							).toString()}`,
 							...Object.entries(options.headers).map(
 								([k, v]) => `> ${k}: ${v}`,
 							),
@@ -149,7 +150,7 @@ export const apiClient = ({
 	) =>
 		new Promise<IncomingHttpHeaders>((resolve, reject) => {
 			const options = {
-				hostname: new URL(endpoint ?? DEFAULT_ENDPOINT).hostname,
+				hostname: e.hostname,
 				port: 443,
 				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
 				headers: {
@@ -162,9 +163,9 @@ export const apiClient = ({
 			const req = https.request(options, (res) => {
 				console.debug(
 					[
-						`> HEAD https://${
-							new URL(endpoint ?? DEFAULT_ENDPOINT).hostname
-						}/v1/${resource}?${new URLSearchParams(payload).toString()}`,
+						`> HEAD https://${e.hostname}/v1/${resource}?${new URLSearchParams(
+							payload,
+						).toString()}`,
 						`< ${res.statusCode} ${res.statusMessage}`,
 						...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
 					].join('\n'),
