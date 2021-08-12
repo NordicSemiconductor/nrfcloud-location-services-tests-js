@@ -1,9 +1,10 @@
 # nRF Cloud Location Services tests
 
-Provides test requests for
+Tests the nRF Cloud Location services
 
 - [LOCATE](https://api.feature.nrfcloud.com/v1#operation/LocateDevice)
 - [AGPS](https://api.feature.nrfcloud.com/v1#operation/GetAssistanceData)
+  (including message validation)
 - [PGPS](https://api.feature.nrfcloud.com/v1#operation/GetPredictedAssistanceData)
 
 Configure these environment variables:
