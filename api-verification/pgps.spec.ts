@@ -12,9 +12,12 @@ const { getJSON } = apiClient({
 
 describe('PGPS', () => {
 	it('should return predicted assistance GPS data', async () => {
-		const res = await getJSON<{ host: string; path: string }>('location/pgps', {
-			predictionCount: 6,
-			predictionIntervalMinutes: 120,
+		const res = await getJSON<{ host: string; path: string }>({
+			resource: 'location/pgps',
+			payload: {
+				predictionCount: 6,
+				predictionIntervalMinutes: 120,
+			},
 		})
 		expect(res.host).not.toBeUndefined()
 		expect(res.path).not.toBeUndefined()

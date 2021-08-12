@@ -220,9 +220,9 @@ describe('multi-cell location', () => {
 			},
 		],
 	])('should resolve %j to %j', async (cellTowers, expectedLocation) => {
-		expect(await post('location/cell', cellTowers)).toMatchLocation(
-			expectedLocation,
-		)
+		expect(
+			await post({ resource: 'location/cell', payload: cellTowers }),
+		).toMatchLocation(expectedLocation)
 	})
 })
 
@@ -243,8 +243,11 @@ describe('single-cell location', () => {
 		],
 	])('should resolve %j to %j', async (cell, expectedLocation) => {
 		expect(
-			await post('location/cell', {
-				lte: [cell],
+			await post({
+				resource: 'location/cell',
+				payload: {
+					lte: [cell],
+				},
 			}),
 		).toMatchLocation(expectedLocation)
 	})

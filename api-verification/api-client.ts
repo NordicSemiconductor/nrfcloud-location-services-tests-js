@@ -18,24 +18,21 @@ export const apiClient = ({
 	tokenKey: string
 	tokenPayload: Record<string, any>
 }): {
-	head: (
-		resource: string,
-		payload: Record<string, any>,
-		headers?: OutgoingHttpHeaders,
-	) => Promise<IncomingHttpHeaders>
-	getJSON: <Response extends Record<string, any>>(
-		...args: Parameters<typeof executeGet>
-	) => Promise<Response>
-	getBinary: (...args: Parameters<typeof executeGet>) => Promise<Buffer>
-	post: (
-		resource: string,
-		payload: Record<string, any>,
-	) => Promise<Record<string, any>>
+	head: typeof head
+	getJSON: typeof getJSON
+	getBinary: typeof getBinary
+	post: typeof post
 } => {
 	const e = new URL(
 		endpoint?.length === 0 ? DEFAULT_ENDPOINT : endpoint ?? DEFAULT_ENDPOINT,
 	)
-	const post = async (resource: string, payload: Record<string, any>) =>
+	const post = async ({
+		resource,
+		payload,
+	}: {
+		resource: string
+		payload: Record<string, any>
+	}) =>
 		new Promise<Record<string, any>>((resolve, reject) => {
 			const options = {
 				hostname: e.hostname,
@@ -66,7 +63,8 @@ export const apiClient = ({
 							'',
 							`< ${res.statusCode} ${res.statusMessage}`,
 							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
-							`${response.join('')}`,
+							'<',
+							`< ${response.join('')}`,
 						].join('\n'),
 					)
 
@@ -80,11 +78,17 @@ export const apiClient = ({
 			req.end()
 		})
 
-	const executeGet = async (
-		resource: string,
-		payload: Record<string, any>,
-		headers: OutgoingHttpHeaders = {},
-	) =>
+	const executeGet = async ({
+		resource,
+		payload,
+		headers,
+		debugResponse,
+	}: {
+		resource: string
+		payload: Record<string, any>
+		headers?: OutgoingHttpHeaders
+		debugResponse: (res: Buffer) => string[]
+	}) =>
 		new Promise<Buffer>((resolve, reject) => {
 			const options = {
 				hostname: e.hostname,
@@ -104,6 +108,7 @@ export const apiClient = ({
 				})
 
 				res.on('end', () => {
+					const data = Buffer.concat(response)
 					console.debug(
 						[
 							`> GET https://${e.hostname}/v1/${resource}?${new URLSearchParams(
@@ -115,12 +120,14 @@ export const apiClient = ({
 							'',
 							`< ${res.statusCode} ${res.statusMessage}`,
 							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+							'<',
+							...debugResponse(data),
 						].join('\n'),
 					)
 
 					if ((res.statusCode ?? -1) > 399)
 						return reject(new Error(`Request failed: ${res.statusCode}`))
-					return resolve(Buffer.concat(response))
+					return resolve(data)
 				})
 			})
 			req.on('error', reject)
@@ -128,26 +135,36 @@ export const apiClient = ({
 		})
 
 	const getJSON = async <Response extends Record<string, any>>(
-		...args: Parameters<typeof executeGet>
+		args: Pick<
+			Parameters<typeof executeGet>[0],
+			Exclude<keyof Parameters<typeof executeGet>[0], 'debugResponse'>
+		>,
 	): Promise<Response> =>
-		executeGet(...args).then((res) => {
-			console.debug(res.toString('utf-8'))
-			return JSON.parse(res.toString('utf-8'))
-		})
+		executeGet({
+			...args,
+			debugResponse: (res: Buffer) => [`< ${res.toString('utf-8')}`],
+		}).then((res) => JSON.parse(res.toString('utf-8')))
 
 	const getBinary = async (
-		...args: Parameters<typeof executeGet>
+		args: Pick<
+			Parameters<typeof executeGet>[0],
+			Exclude<keyof Parameters<typeof executeGet>[0], 'debugResponse'>
+		>,
 	): Promise<Buffer> =>
-		executeGet(...args).then((res) => {
-			console.debug(`(${res.length} bytes binary data)`)
-			return res
+		executeGet({
+			...args,
+			debugResponse: (res: Buffer) => [`< ${res.toString('hex')}`],
 		})
 
-	const head = async (
-		resource: string,
-		payload: Record<string, any>,
-		headers = {},
-	) =>
+	const head = async ({
+		resource,
+		payload,
+		headers,
+	}: {
+		resource: string
+		payload: Record<string, any>
+		headers?: OutgoingHttpHeaders
+	}) =>
 		new Promise<IncomingHttpHeaders>((resolve, reject) => {
 			const options = {
 				hostname: e.hostname,
