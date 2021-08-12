@@ -7,7 +7,7 @@ import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http'
 const token = (tokenKey: string, payload: Record<string, any>) =>
 	jwt.sign(payload, tokenKey, { algorithm: 'ES256' })
 
-const DEFAULT_ENDPOINT = 'https://api.beta.nrfcloud.com'
+const DEFAULT_ENDPOINT = 'https://api.nrfcloud.com'
 
 export const apiClient = ({
 	endpoint,

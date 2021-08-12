@@ -9,7 +9,7 @@ on:
       api_host:
         description: "API host"
         required: true
-        default: "https://api.beta.nrfcloud.com"
+        default: "https://api.nrfcloud.com"
 
 env:
   API_HOST: ${{ github.event.inputs.api_host }}
