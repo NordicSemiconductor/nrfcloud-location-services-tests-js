@@ -30,7 +30,7 @@
     "@commitlint/config-angular": "13.1.0",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "9.0.4",
     "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "8.0.6",
-    "@types/jest": "27.0.0",
+    "@types/jest": "27.0.1",
     "@types/jsonwebtoken": "8.5.4",
     "@types/node": "16.6.0",
     "eslint": "7.32.0",
