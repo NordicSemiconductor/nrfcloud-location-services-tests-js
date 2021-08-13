@@ -2,8 +2,8 @@
   "name": "@nordicsemiconductor/nrfcloud-location-services-tests",
   "version": "0.0.0-development",
   "description": "Verifies A-GPS messages sent by nRF Cloud",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest src",
     "api:tests": "jest api-verification",
@@ -70,7 +70,7 @@
   },
   "files": [
     "package-lock.json",
-    "dist",
+    "dist/src",
     "LICENSE",
     "README.md"
   ],
