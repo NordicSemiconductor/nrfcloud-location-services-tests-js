@@ -119,4 +119,41 @@ describe('AGPS', () => {
 			},
 		)
 	})
+
+	it('should combine types', async () => {
+		const types = new Set([1, 3, 4, 6, 7, 8, 9])
+		const agpsReq = {
+			mcc: 242,
+			mnc: 2,
+			eci: 33703712,
+			tac: 2305,
+			requestType: 'custom',
+			customTypes: [...types],
+		}
+
+		const headRes = await head({
+			resource: 'location/agps',
+			payload: agpsReq,
+		})
+		const chunkSize = parseInt(headRes['content-length'] ?? '0', 10)
+		expect(chunkSize).toBeGreaterThan(0)
+
+		const res = await getBinary({
+			resource: 'location/agps',
+			payload: agpsReq,
+			headers: {
+				'Content-Type': 'application/octet-stream',
+				Range: `bytes=0-${chunkSize}`,
+			},
+		})
+		expect(res.length).toEqual(chunkSize)
+
+		// Verify response
+		const verified = verify(res)
+		expect(isRight(verified)).toEqual(true)
+		const m = (verified as Right<AGPSMessage>).right
+		expect(m.schemaVersion).toEqual(SCHEMA_VERSION)
+		expect(m.entries).toHaveLength(7)
+		expect(new Set(m.entries.map(({ type }) => type))).toEqual(types)
+	})
 })
