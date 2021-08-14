@@ -5,14 +5,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
-    inputs:
-      api_host:
-        description: "API host"
-        required: true
-        default: "https://api.nrfcloud.com"
 
 env:
-  API_HOST: ${{ github.event.inputs.api_host }}
+  API_HOST: ${{ secrets.API_HOST }}
   TEAM_ID: ${{ secrets.TEAM_ID }}
   AGPS_SERVICE_KEY: ${{ secrets.AGPS_SERVICE_KEY }}
   PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}

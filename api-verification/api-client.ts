@@ -23,9 +23,7 @@ export const apiClient = ({
 	getBinary: typeof getBinary
 	post: typeof post
 } => {
-	const e = new URL(
-		endpoint?.length === 0 ? DEFAULT_ENDPOINT : endpoint ?? DEFAULT_ENDPOINT,
-	)
+	const e = new URL(endpoint ?? DEFAULT_ENDPOINT)
 	const post = async ({
 		resource,
 		payload,
