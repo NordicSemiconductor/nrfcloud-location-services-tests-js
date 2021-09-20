@@ -1,11 +1,13 @@
-import { apiClient } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client'
 
 const { post } = apiClient({
 	endpoint: process.env.API_HOST,
-	tokenKey: process.env.CELLGEO_SERVICE_KEY ?? '',
-	tokenPayload: {
-		aud: process.env.TEAM_ID,
-	},
+	authorizationToken: tokenAuthorization({
+		tokenKey: process.env.CELLGEO_SERVICE_KEY ?? '',
+		tokenPayload: {
+			aud: process.env.TEAM_ID,
+		},
+	}),
 })
 
 const inRange = (received: number, expected: number, delta = 0.5): boolean => {

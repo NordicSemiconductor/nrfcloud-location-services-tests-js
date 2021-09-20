@@ -1,13 +1,15 @@
 import { IncomingHttpHeaders } from 'http'
 import * as https from 'https'
-import { apiClient } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client'
 
 const { getJSON } = apiClient({
 	endpoint: process.env.API_HOST,
-	tokenKey: process.env.PGPS_SERVICE_KEY ?? '',
-	tokenPayload: {
-		aud: process.env.TEAM_ID,
-	},
+	authorizationToken: tokenAuthorization({
+		tokenKey: process.env.PGPS_SERVICE_KEY ?? '',
+		tokenPayload: {
+			aud: process.env.TEAM_ID,
+		},
+	}),
 })
 
 describe('PGPS', () => {

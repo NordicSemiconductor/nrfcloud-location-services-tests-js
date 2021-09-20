@@ -1,13 +1,15 @@
 import { isRight, Right } from 'fp-ts/lib/Either'
 import { AGPSMessage, SCHEMA_VERSION, verify } from '../src/verify-agps-data'
-import { apiClient } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client'
 
 const { getBinary, head } = apiClient({
 	endpoint: process.env.API_HOST,
-	tokenKey: process.env.AGPS_SERVICE_KEY ?? '',
-	tokenPayload: {
-		aud: process.env.TEAM_ID,
-	},
+	authorizationToken: tokenAuthorization({
+		tokenKey: process.env.AGPS_SERVICE_KEY ?? '',
+		tokenPayload: {
+			aud: process.env.TEAM_ID,
+		},
+	}),
 })
 
 describe('AGPS', () => {

@@ -7,21 +7,28 @@ import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http'
 const token = (tokenKey: string, payload: Record<string, any>) =>
 	jwt.sign(payload, tokenKey, { algorithm: 'ES256' })
 
+export const tokenAuthorization = ({
+	tokenKey,
+	tokenPayload,
+}: {
+	tokenKey: string
+	tokenPayload: Record<string, any>
+}): string => token(tokenKey, tokenPayload)
+
 const DEFAULT_ENDPOINT = 'https://api.nrfcloud.com'
 
 export const apiClient = ({
 	endpoint,
-	tokenKey,
-	tokenPayload,
+	authorizationToken,
 }: {
 	endpoint?: string
-	tokenKey: string
-	tokenPayload: Record<string, any>
+	authorizationToken: string
 }): {
 	head: typeof head
 	getJSON: typeof getJSON
 	getBinary: typeof getBinary
 	post: typeof post
+	postBinary: typeof postBinary
 } => {
 	const e = new URL(endpoint ?? DEFAULT_ENDPOINT)
 	const post = async ({
@@ -38,7 +45,7 @@ export const apiClient = ({
 				path: `/v1/${resource}`,
 				method: 'POST',
 				headers: {
-					Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
+					Authorization: `Bearer ${authorizationToken}`,
 					'Content-Type': 'application/json',
 				},
 			}
@@ -55,6 +62,58 @@ export const apiClient = ({
 						[
 							`> POST https://${e.hostname}/v1/${resource}`,
 							`${JSON.stringify(payload)}`,
+							...Object.entries(options.headers).map(
+								([k, v]) => `> ${k}: ${v}`,
+							),
+							'',
+							`< ${res.statusCode} ${res.statusMessage}`,
+							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+							'<',
+							`< ${response.join('')}`,
+						].join('\n'),
+					)
+
+					if (res.statusCode !== 200)
+						return reject(new Error(`Request failed: ${res.statusCode}`))
+					resolve(JSON.parse(response.join('')))
+				})
+			})
+			req.on('error', reject)
+			req.write(JSON.stringify(payload))
+			req.end()
+		})
+
+	const postBinary = async ({
+		resource,
+		payload,
+	}: {
+		resource: string
+		payload: any
+	}) =>
+		new Promise<Record<string, any>>((resolve, reject) => {
+			const options = {
+				hostname: e.hostname,
+				port: 443,
+				path: `/v1/${resource}`,
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${authorizationToken}`,
+					'Content-Type': 'application/octet-stream',
+				},
+			}
+
+			const req = https.request(options, (res) => {
+				const response: string[] = []
+
+				res.on('data', (d) => {
+					response.push(d.toString())
+				})
+
+				res.on('end', () => {
+					console.debug(
+						[
+							`> POST https://${e.hostname}/v1/${resource}`,
+							payload,
 							...Object.entries(options.headers).map(
 								([k, v]) => `> ${k}: ${v}`,
 							),
@@ -93,7 +152,7 @@ export const apiClient = ({
 				port: 443,
 				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
 				headers: {
-					Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
+					Authorization: `Bearer ${authorizationToken}`,
 					...headers,
 				},
 			}
@@ -169,7 +228,7 @@ export const apiClient = ({
 				port: 443,
 				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
 				headers: {
-					Authorization: `Bearer ${token(tokenKey, tokenPayload)}`,
+					Authorization: `Bearer ${authorizationToken}`,
 					...headers,
 				},
 				method: 'HEAD',
@@ -199,5 +258,6 @@ export const apiClient = ({
 		getJSON,
 		getBinary,
 		post,
+		postBinary,
 	}
 }
