@@ -12,6 +12,7 @@ env:
   AGPS_SERVICE_KEY: ${{ secrets.AGPS_SERVICE_KEY }}
   PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}
   CELLGEO_SERVICE_KEY: ${{ secrets.CELLGEO_SERVICE_KEY }}
+  API_KEY: ${{ secrets.API_KEY }}
 
 jobs:
   tests:
