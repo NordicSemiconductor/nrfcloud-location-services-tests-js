@@ -3,16 +3,19 @@ import { v4 } from 'uuid'
 import { spawn } from 'child_process'
 import * as os from 'os'
 
+const endpoint = process.env.API_HOST
+
 const apiKeyClient = apiClient({
-	endpoint: process.env.API_HOST,
+	endpoint,
 	authorizationToken: process.env.API_KEY as string,
 })
 
 describe('authenticate using device keys', () => {
 	let privateKey: string
+	let publicKey: string
 	let deviceId: string
 
-	it('should register a new device key', async () => {
+	beforeAll(async () => {
 		// Generate a globally uniqe device ID
 		deviceId = v4()
 
@@ -42,7 +45,7 @@ describe('authenticate using device keys', () => {
 			})
 		})
 
-		const publicKey = await new Promise<string>((resolve, reject) => {
+		publicKey = await new Promise<string>((resolve, reject) => {
 			const openssl = spawn('openssl', ['ec', '-pubout', '-outform', 'pem'])
 			openssl.stdin.write(privateKey)
 
@@ -66,7 +69,9 @@ describe('authenticate using device keys', () => {
 				return resolve(res.join(os.EOL))
 			})
 		})
+	})
 
+	it('should register a new device key', async () => {
 		await apiKeyClient.postBinary({
 			resource: 'devices/public-keys',
 			payload: `${deviceId},"${publicKey}"`,
@@ -75,7 +80,7 @@ describe('authenticate using device keys', () => {
 
 	it('should accept the device-key based JWT', async () => {
 		const { getJSON } = apiClient({
-			endpoint: process.env.API_HOST,
+			endpoint,
 			authorizationToken: tokenAuthorization({
 				tokenKey: privateKey,
 				tokenPayload: {
