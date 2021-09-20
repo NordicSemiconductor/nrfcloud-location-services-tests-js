@@ -1,0 +1,96 @@
+import { apiClient, tokenAuthorization } from './api-client'
+import { v4 } from 'uuid'
+import { spawn } from 'child_process'
+import * as os from 'os'
+
+const apiKeyClient = apiClient({
+	endpoint: process.env.API_HOST,
+	authorizationToken: process.env.API_KEY as string,
+})
+
+describe('authenticate using device keys', () => {
+	let privateKey: string
+	let deviceId: string
+
+	it('should register a new device key', async () => {
+		// Generate a globally uniqe device ID
+		deviceId = v4()
+
+		// Generate a key for the device
+		privateKey = await new Promise<string>((resolve, reject) => {
+			const openssl = spawn('openssl', [
+				'ecparam',
+				'-name',
+				'secp256k1',
+				'-genkey',
+			])
+			const res: string[] = []
+			const err: string[] = []
+			openssl.stdout.on('data', (data) => {
+				res.push(data)
+			})
+
+			openssl.stderr.on('data', (data) => {
+				err.push(data)
+			})
+
+			openssl.on('close', (code) => {
+				if (code !== 0) {
+					return reject(err.join(os.EOL))
+				}
+				return resolve(res.join(os.EOL))
+			})
+		})
+
+		const publicKey = await new Promise<string>((resolve, reject) => {
+			const openssl = spawn('openssl', ['ec', '-pubout', '-outform', 'pem'])
+			openssl.stdin.write(privateKey)
+
+			console.log(privateKey)
+
+			const res: string[] = []
+			const err: string[] = []
+			openssl.stdout.on('data', (data) => {
+				console.log(Buffer.from(data).toString())
+				res.push(data)
+			})
+
+			openssl.stderr.on('data', (data) => {
+				err.push(data)
+			})
+
+			openssl.on('close', (code) => {
+				if (code !== 0) {
+					return reject(err.join(os.EOL))
+				}
+				return resolve(res.join(os.EOL))
+			})
+		})
+
+		await apiKeyClient.postBinary({
+			resource: 'devices/public-keys',
+			payload: `${deviceId},"${publicKey}"`,
+		})
+	})
+
+	it('should accept the device-key based JWT', async () => {
+		const { getJSON } = apiClient({
+			endpoint: process.env.API_HOST,
+			authorizationToken: tokenAuthorization({
+				tokenKey: privateKey,
+				tokenPayload: {
+					sub: deviceId,
+				},
+			}),
+		})
+		const res = await getJSON<{ host: string; path: string }>({
+			resource: 'location/pgps',
+			payload: {
+				predictionCount: 6,
+				predictionIntervalMinutes: 120,
+			},
+		})
+		expect(res.host).not.toBeUndefined()
+		expect(res.path).not.toBeUndefined()
+	})
+})
