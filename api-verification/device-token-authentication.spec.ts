@@ -14,6 +14,7 @@ describe('authenticate using device keys', () => {
 	let privateKey: string
 	let publicKey: string
 	let deviceId: string
+	let bulkOpsRequestId: string
 
 	beforeAll(async () => {
 		// Generate a globally uniqe device ID
@@ -72,10 +73,37 @@ describe('authenticate using device keys', () => {
 	})
 
 	it('should register a new device key', async () => {
-		await apiKeyClient.postBinary({
+		const { bulkOpsRequestId: rid } = await apiKeyClient.postBinary({
 			resource: 'devices/public-keys',
 			payload: `${deviceId},"${publicKey}"`,
 		})
+		bulkOpsRequestId = rid
+		expect(bulkOpsRequestId).not.toBeUndefined()
+	})
+
+	it('should process the request', async () => {
+		const getStatus = async () =>
+			apiKeyClient
+				.getJSON({
+					resource: `bulk-ops-requests/${bulkOpsRequestId}`,
+				})
+				.then(({ status }) => status)
+		const status = await new Promise((resolve, reject) => {
+			let t: NodeJS.Timeout | undefined = undefined
+			const i = setInterval(async () => {
+				const status = await getStatus()
+				if (status !== 'PENDING') {
+					clearInterval(i)
+					if (t !== undefined) clearTimeout(t)
+					resolve(status)
+				}
+			}, 1000)
+			t = setTimeout(() => {
+				clearInterval(i)
+				reject(new Error(`Timeout`))
+			}, 30000)
+		})
+		expect(status).toEqual('SUCCEEDED')
 	})
 
 	it('should accept the device-key based JWT', async () => {
