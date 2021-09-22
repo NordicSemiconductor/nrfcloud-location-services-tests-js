@@ -2,7 +2,7 @@ import * as https from 'https'
 import { URL } from 'url'
 import { URLSearchParams } from 'url'
 import * as jwt from 'jsonwebtoken'
-import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http'
+import { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'http'
 
 const token = (tokenKey: string, payload: Record<string, any>) =>
 	jwt.sign(payload, tokenKey, { algorithm: 'ES256' })
@@ -17,6 +17,9 @@ export const tokenAuthorization = ({
 
 const DEFAULT_ENDPOINT = 'https://api.nrfcloud.com'
 
+const ok = (res: IncomingMessage) =>
+	(res?.statusCode ?? -1) >= 200 && (res?.statusCode ?? -1) < 300
+
 export const apiClient = ({
 	endpoint,
 	authorizationToken,
@@ -29,6 +32,7 @@ export const apiClient = ({
 	getBinary: typeof getBinary
 	post: typeof post
 	postBinary: typeof postBinary
+	deleteJSON: typeof deleteJSON
 } => {
 	const e = new URL(endpoint ?? DEFAULT_ENDPOINT)
 	const post = async ({
@@ -73,7 +77,7 @@ export const apiClient = ({
 						].join('\n'),
 					)
 
-					if (res.statusCode !== 200)
+					if (!ok(res))
 						return reject(new Error(`Request failed: ${res.statusCode}`))
 					resolve(JSON.parse(response.join('')))
 				})
@@ -125,71 +129,83 @@ export const apiClient = ({
 						].join('\n'),
 					)
 
-					if (res.statusCode !== 200)
+					if (!ok(res))
 						return reject(new Error(`Request failed: ${res.statusCode}`))
 					resolve(JSON.parse(response.join('')))
 				})
 			})
 			req.on('error', reject)
-			req.write(JSON.stringify(payload))
+			req.write(payload)
 			req.end()
 		})
 
-	const executeGet = async ({
-		resource,
-		payload,
-		headers,
-		debugResponse,
-	}: {
-		resource: string
-		payload: Record<string, any>
-		headers?: OutgoingHttpHeaders
-		debugResponse: (res: Buffer) => string[]
-	}) =>
-		new Promise<Buffer>((resolve, reject) => {
-			const options = {
-				hostname: e.hostname,
-				port: 443,
-				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
-				headers: {
-					Authorization: `Bearer ${authorizationToken}`,
-					...headers,
-				},
-			}
+	const executeMethod =
+		(method: string) =>
+		async ({
+			resource,
+			payload,
+			headers,
+			debugResponse,
+		}: {
+			resource: string
+			payload?: Record<string, any>
+			headers?: OutgoingHttpHeaders
+			debugResponse: (res: Buffer) => string[]
+		}) =>
+			new Promise<Buffer>((resolve, reject) => {
+				const options = {
+					hostname: e.hostname,
+					method,
+					port: 443,
+					path: `/v1/${resource}${
+						payload !== undefined
+							? `?${new URLSearchParams(payload).toString()}`
+							: ''
+					}`,
+					headers: {
+						Authorization: `Bearer ${authorizationToken}`,
+						...headers,
+					},
+				}
 
-			const req = https.get(options, (res) => {
-				const response: Buffer[] = []
+				const req = https.get(options, (res) => {
+					const response: Buffer[] = []
 
-				res.on('data', (d) => {
-					response.push(d)
+					res.on('data', (d) => {
+						response.push(d)
+					})
+
+					res.on('end', () => {
+						const data = Buffer.concat(response)
+						console.debug(
+							[
+								`> ${method} https://${e.hostname}/v1/${resource}${
+									payload !== undefined
+										? `?${new URLSearchParams(payload).toString()}`
+										: ''
+								}`,
+								...Object.entries(options.headers).map(
+									([k, v]) => `> ${k}: ${v}`,
+								),
+								'',
+								`< ${res.statusCode} ${res.statusMessage}`,
+								...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+								'<',
+								...debugResponse(data),
+							].join('\n'),
+						)
+
+						if ((res.statusCode ?? -1) > 399)
+							return reject(new Error(`Request failed: ${res.statusCode}`))
+						return resolve(data)
+					})
 				})
-
-				res.on('end', () => {
-					const data = Buffer.concat(response)
-					console.debug(
-						[
-							`> GET https://${e.hostname}/v1/${resource}?${new URLSearchParams(
-								payload,
-							).toString()}`,
-							...Object.entries(options.headers).map(
-								([k, v]) => `> ${k}: ${v}`,
-							),
-							'',
-							`< ${res.statusCode} ${res.statusMessage}`,
-							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
-							'<',
-							...debugResponse(data),
-						].join('\n'),
-					)
-
-					if ((res.statusCode ?? -1) > 399)
-						return reject(new Error(`Request failed: ${res.statusCode}`))
-					return resolve(data)
-				})
+				req.on('error', reject)
+				req.end()
 			})
-			req.on('error', reject)
-			req.end()
-		})
+
+	const executeGet = executeMethod('GET')
+	const executeDelete = executeMethod('DELETE')
 
 	const getJSON = async <Response extends Record<string, any>>(
 		args: Pick<
@@ -198,6 +214,17 @@ export const apiClient = ({
 		>,
 	): Promise<Response> =>
 		executeGet({
+			...args,
+			debugResponse: (res: Buffer) => [`< ${res.toString('utf-8')}`],
+		}).then((res) => JSON.parse(res.toString('utf-8')))
+
+	const deleteJSON = async <Response extends Record<string, any>>(
+		args: Pick<
+			Parameters<typeof executeDelete>[0],
+			Exclude<keyof Parameters<typeof executeDelete>[0], 'debugResponse'>
+		>,
+	): Promise<Response> =>
+		executeDelete({
 			...args,
 			debugResponse: (res: Buffer) => [`< ${res.toString('utf-8')}`],
 		}).then((res) => JSON.parse(res.toString('utf-8')))
@@ -259,5 +286,6 @@ export const apiClient = ({
 		getBinary,
 		post,
 		postBinary,
+		deleteJSON,
 	}
 }
