@@ -226,6 +226,48 @@ describe('multi-cell location', () => {
 			await post({ resource: 'location/cell', payload: cellTowers }),
 		).toMatchLocation(expectedLocation)
 	})
+
+	it('should resolve this multi-cell result', async () => {
+		expect(async () =>
+			post({
+				resource: 'location/cell',
+				payload: {
+					lte: [
+						{
+							mcc: 242,
+							mnc: 2,
+							eci: 34237195,
+							tac: 2305,
+							earfcn: 1650,
+							adv: 65535,
+							rsrp: -74,
+							rsrq: -7,
+							nmr: [
+								{
+									pci: 64,
+									rsrp: -85,
+									rsrq: -18,
+									earfcn: 1650,
+								},
+								{
+									pci: 100,
+									rsrp: -94,
+									rsrq: -26,
+									earfcn: 1650,
+								},
+								{
+									pci: 191,
+									rsrp: -95,
+									rsrq: -26,
+									earfcn: 1650,
+								},
+							],
+						},
+					],
+				},
+			}),
+		).not.toThrow()
+	})
 })
 
 describe('single-cell location', () => {
