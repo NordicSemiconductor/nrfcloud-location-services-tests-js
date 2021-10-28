@@ -18,7 +18,6 @@ env:
 jobs:
   agps:
     name: A-GPS Service API verification tests
-    if: env.AGPS_SERVICE_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -29,7 +28,6 @@ jobs:
       - run: npx jest agps.spec.ts
   pgps:
     name: P-GPS Service API verification tests
-    if: env.PGPS_SERVICE_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -40,7 +38,6 @@ jobs:
       - run: npx jest pgps.spec.ts
   cellgeo:
     name: Cell Geolocation Service API verification tests
-    if: env.CELLGEO_SERVICE_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -51,7 +48,6 @@ jobs:
       - run: npx jest locate.spec.ts
   evaltoken:
     name: Evaluation Token Authentication verification tests
-    if: env.EVALUATION_TOKEN != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -62,7 +58,6 @@ jobs:
       - run: npx jest evaluation-token-authentication.spec.ts
   devicetoken:
     name: Device Token Authentication verification tests
-    if: env.API_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
