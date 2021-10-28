@@ -25,3 +25,18 @@ Then run:
 
     npm ci
     npm run test
+
+## Device Token Authentication
+
+> :warning: Using REST with JWT on a cellular device is not recommended because
+> this protocol (REST using TLS with JWT authentication) has a very large
+> overhead. MQTT is recommended for cellular devices.
+
+[device-token-authentication.spec.ts](./api-verification/device-token-authentication.spec.ts)
+demonstrates the usage of per-device tokens to authenticate requests.
+
+The tests register a private key for a virtual device and use that key to sign a
+JWT.
+
+For this test you need to configure the environment variable `API_KEY`, which
+contains your nRF Cloud REST API key.
