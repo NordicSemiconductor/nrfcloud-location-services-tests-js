@@ -16,7 +16,9 @@ env:
   EVALUATION_TOKEN: ${{ secrets.EVALUATION_TOKEN }}
 
 jobs:
-  tests:
+  agps:
+    name: A-GPS Service API verification tests
+    if: env.AGPS_SERVICE_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -24,18 +26,48 @@ jobs:
           node-version: "16.x"
       - uses: actions/checkout@v2
       - run: npm ci
-      - name: A-GPS Service API verification tests
-        if: env.AGPS_SERVICE_KEY != ''
-        run: npx jest agps.spec.ts
-      - name: P-GPS Service API verification tests
-        if: env.PGPS_SERVICE_KEY != ''
-        run: npx jest pgps.spec.ts
-      - name: Cell Service API Location verification tests
-        if: env.CELLGEO_SERVICE_KEY != ''
-        run: npx jest locate.spec.ts
-      - name: Evaluation Token Authentication verification tests
-        if: env.EVALUATION_TOKEN != ''
-        run: npx jest evaluation-token-authentication.spec.ts
-      - name: Device Token Authentication verification tests
-        if: env.API_KEY != ''
-        run: npx jest device-token-authentication.spec.ts
+      - run: npx jest agps.spec.ts
+  pgps:
+    name: P-GPS Service API verification tests
+    if: env.PGPS_SERVICE_KEY != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npx jest pgps.spec.ts
+  cellgeo:
+    name: Cell Geolocation Service API verification tests
+    if: env.CELLGEO_SERVICE_KEY != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npx jest locate.spec.ts
+  evaltoken:
+    name: Evaluation Token Authentication verification tests
+    if: env.EVALUATION_TOKEN != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npx jest evaluation-token-authentication.spec.ts
+  devicetoken:
+    name: Device Token Authentication verification tests
+    if: env.API_KEY != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npx jest device-token-authentication.spec.ts
