@@ -26,6 +26,18 @@ Then run:
     npm ci
     npm run test
 
+## Authentication using the Evaluation Token
+
+For evaluation purposes, user can generate an evaluation token (see the
+[nRF Cloud Location Services documentation](https://docs.nrfcloud.com/Guides/GettingStarted/LocationServices#using-rest)
+for further information.)
+
+[evaluation-token-authentication.spec.ts](./api-verification/evaluation-token-authentication.spec.ts)
+demonstrates the usage of an evaluation token to authenticate requests.
+
+For this test you need to configure the environment variable `EVALUATION_TOKEN`,
+which contains your nRF Cloud Location Service Evaluation Token.
+
 ## Device Token Authentication
 
 > :warning: Using REST with JWT on a cellular device is not recommended because

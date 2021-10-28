@@ -6,7 +6,6 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest src",
-    "api:tests": "jest api-verification",
     "prepare": "husky install"
   },
   "repository": {

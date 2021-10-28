@@ -1,4 +1,4 @@
-name: Run nRF Cloud Location Service API tests
+name: nRF Cloud Location Service API tests
 
 on:
   push:
@@ -13,6 +13,7 @@ env:
   PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}
   CELLGEO_SERVICE_KEY: ${{ secrets.CELLGEO_SERVICE_KEY }}
   API_KEY: ${{ secrets.API_KEY }}
+  EVALUATION_TOKEN: ${{ secrets.EVALUATION_TOKEN }}
 
 jobs:
   tests:
@@ -23,4 +24,18 @@ jobs:
           node-version: "16.x"
       - uses: actions/checkout@v2
       - run: npm ci
-      - run: npm run api:tests
+      - name: A-GPS Service API verification tests
+        if: env.AGPS_SERVICE_KEY != ''
+        run: npx jest agps.spec.ts
+      - name: P-GPS Service API verification tests
+        if: env.PGPS_SERVICE_KEY != ''
+        run: npx jest pgps.spec.ts
+      - name: Cell Service API Location verification tests
+        if: env.CELLGEO_SERVICE_KEY != ''
+        run: npx jest locate.spec.ts
+      - name: Evaluation Token Authentication verification tests
+        if: env.EVALUATION_TOKEN != ''
+        run: npx jest evaluation-token-authentication.spec.ts
+      - name: Device Token Authentication verification tests
+        if: env.API_KEY != ''
+        run: npx jest device-token-authentication.spec.ts
