@@ -26,9 +26,9 @@ Then run:
     npm ci
     npm run test
 
-## Authentication using the Evaluation Token
+## Authentication using Evaluation Token
 
-For evaluation purposes, user can generate an evaluation token (see the
+For evaluation purposes, users can generate an evaluation token (see the
 [nRF Cloud Location Services documentation](https://docs.nrfcloud.com/Guides/GettingStarted/LocationServices#using-rest)
 for further information.)
 
