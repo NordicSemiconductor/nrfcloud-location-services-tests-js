@@ -228,7 +228,7 @@ describe('multi-cell location', () => {
 	})
 
 	it('should resolve this multi-cell result', async () => {
-		expect(async () =>
+		await expect(
 			post({
 				resource: 'location/cell',
 				payload: {
@@ -266,7 +266,7 @@ describe('multi-cell location', () => {
 					],
 				},
 			}),
-		).not.toThrow()
+		).resolves.not.toBeUndefined()
 	})
 })
 
