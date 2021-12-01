@@ -53,9 +53,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "16.x"
+        if: env.EVALUATION_TOKEN != ''
       - uses: actions/checkout@v2
+        if: env.EVALUATION_TOKEN != ''
       - run: npm ci
+        if: env.EVALUATION_TOKEN != ''
       - run: npx jest evaluation-token-authentication.spec.ts
+        if: env.EVALUATION_TOKEN != ''
   devicetoken:
     name: Device Token Authentication verification tests
     runs-on: ubuntu-latest
