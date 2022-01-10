@@ -72,7 +72,7 @@
     "testRegex": "(src|api-verification)\\/.+\\.spec\\.ts$"
   },
   "dependencies": {
-    "fp-ts": "2.11.6",
+    "fp-ts": "2.11.7",
     "jsonwebtoken": "8.5.1"
   }
 }
