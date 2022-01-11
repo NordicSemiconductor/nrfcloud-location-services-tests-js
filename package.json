@@ -1,7 +1,7 @@
 {
   "name": "@nordicsemiconductor/nrfcloud-location-services-tests",
   "version": "0.0.0-development",
-  "description": "Verifies A-GPS messages sent by nRF Cloud",
+  "description": "Verifies the nRF Cloud Location Services REST API.",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
@@ -10,17 +10,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NordicSemiconductor/nrfcloud-location-services-tests-js.git"
+    "url": "https://github.com/NordicSemiconductor/nrfcloud-location-services-tests-js.git"
   },
   "bugs": {
     "url": "https://github.com/NordicSemiconductor/nrfcloud-location-services-tests-js/issues"
   },
   "homepage": "https://github.com/NordicSemiconductor/nrfcloud-location-services-tests-js",
   "keywords": [
-    "Cloud",
-    "IoT",
-    "nRF Asset Tracker",
-    "Nordic Semiconductor"
+    "nrf-cloud",
+    "location-services",
+    "end-to-end-testing"
   ],
   "author": "Nordic Semiconductor ASA | nordicsemi.no",
   "license": "BSD-3-Clause",
