@@ -20,7 +20,7 @@ jobs:
     name: A-GPS Service API verification tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     name: P-GPS Service API verification tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
       - uses: actions/checkout@v2
@@ -40,7 +40,7 @@ jobs:
     name: Cell Geolocation Service API verification tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
       - uses: actions/checkout@v2
@@ -50,7 +50,7 @@ jobs:
     name: Evaluation Token Authentication verification tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
         if: env.EVALUATION_TOKEN != ''
@@ -64,7 +64,7 @@ jobs:
     name: Device Token Authentication verification tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16.x"
       - uses: actions/checkout@v2
