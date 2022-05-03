@@ -25,12 +25,12 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.61",
+    "@swc/jest": "0.2.20",
     "@types/jest": "27.5.0",
     "@types/jsonwebtoken": "8.5.8",
     "@types/node": "16.11.33",
     "@types/uuid": "8.3.4",
     "jest": "28.0.3",
-    "ts-jest": "27.1.4",
     "ts-loader": "9.3.0",
     "uuid": "8.3.2"
   },
@@ -67,7 +67,11 @@
     "README.md"
   ],
   "jest": {
-    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.(t|j)sx?$": [
+        "@swc/jest"
+      ]
+    },
     "testRegex": "(src|api-verification)\\/.+\\.spec\\.ts$"
   },
   "dependencies": {
