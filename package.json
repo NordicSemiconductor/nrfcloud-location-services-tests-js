@@ -30,7 +30,7 @@
     "@types/jsonwebtoken": "8.5.8",
     "@types/node": "16.11.33",
     "@types/uuid": "8.3.4",
-    "jest": "28.0.3",
+    "jest": "28.1.0",
     "ts-loader": "9.3.0",
     "uuid": "8.3.2"
   },
