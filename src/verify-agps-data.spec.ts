@@ -1,7 +1,7 @@
-import { AGPSType, DataGram, SCHEMA_VERSION, verify } from './verify-agps-data'
+import { isRight, Left, Right } from 'fp-ts/lib/Either'
 import * as fs from 'fs'
 import * as path from 'path'
-import { isRight, Right, Left } from 'fp-ts/lib/Either'
+import { AGPSType, DataGram, SCHEMA_VERSION, verify } from './verify-agps-data'
 
 describe('verify', () => {
 	it.each([

@@ -1,4 +1,4 @@
-import { Either, right, left } from 'fp-ts/lib/Either'
+import { Either, left, right } from 'fp-ts/lib/Either'
 
 export const SCHEMA_VERSION = 1
 
