@@ -1,7 +1,7 @@
-import { apiClient, tokenAuthorization } from './api-client'
-import { v4 } from 'uuid'
 import { spawn } from 'child_process'
 import * as os from 'os'
+import { v4 } from 'uuid'
+import { apiClient, tokenAuthorization } from './api-client'
 
 const endpoint = process.env.API_HOST
 

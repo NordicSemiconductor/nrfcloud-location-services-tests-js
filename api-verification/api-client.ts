@@ -1,8 +1,7 @@
-import * as https from 'https'
-import { URL } from 'url'
-import { URLSearchParams } from 'url'
-import * as jwt from 'jsonwebtoken'
 import { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'http'
+import * as https from 'https'
+import * as jwt from 'jsonwebtoken'
+import { URL, URLSearchParams } from 'url'
 
 const token = (tokenKey: string, payload: Record<string, any>) =>
 	jwt.sign(payload, tokenKey, { algorithm: 'ES256' })
