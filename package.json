@@ -27,7 +27,7 @@
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "11.0.113",
     "@swc/jest": "0.2.22",
     "@types/jest": "28.1.8",
-    "@types/jsonwebtoken": "8.5.8",
+    "@types/jsonwebtoken": "8.5.9",
     "@types/node": "16.11.55",
     "@types/uuid": "8.3.4",
     "jest": "28.1.3",
