@@ -1,5 +1,3 @@
-import { Either, left, right } from 'fp-ts/lib/Either'
-
 export const SCHEMA_VERSION = 1
 
 export enum AGPSType {
@@ -37,16 +35,16 @@ export type DataGram = {
 export const verify = (
 	buf: Buffer,
 	debug?: (message?: any, ...optionalParams: any[]) => void,
-): Either<Error, AGPSMessage> => {
+): { error: Error } | AGPSMessage => {
 	// First byte is schemaVersion
 	const schemaVersion = buf.readUInt8(0)
 
 	if (schemaVersion !== SCHEMA_VERSION) {
-		return left(
-			new Error(
+		return {
+			error: new Error(
 				`Expected schema version ${SCHEMA_VERSION}, got ${schemaVersion}`,
 			),
-		)
+		}
 	}
 
 	const entries = []
@@ -56,7 +54,9 @@ export const verify = (
 		const type = buf.readUInt8(offset)
 		debug?.(`Read type ${type} at ${offset}`)
 		if (AGPSType[type] === undefined)
-			return left(new Error(`Encountered unsupported datagram type: ${type}`))
+			return {
+				error: new Error(`Encountered unsupported datagram type: ${type}`),
+			}
 
 		const numItems = buf.readUInt16LE(offset + 1)
 		debug?.(`Read length ${numItems} at ${offset + 1}`)
@@ -64,13 +64,13 @@ export const verify = (
 		debug?.(`assume ${numItems * datagramLength[type]} bytes of data`)
 
 		if (offset > buf.length)
-			return left(
-				new Error(
+			return {
+				error: new Error(
 					`Datagram is ${
 						offset - buf.length
 					} bytes too short to contain ${numItems} items of ${AGPSType[type]}`,
 				),
-			)
+			}
 
 		entries.push({ type, items: numItems })
 
@@ -79,5 +79,5 @@ export const verify = (
 		}
 	}
 
-	return right({ schemaVersion, entries })
+	return { schemaVersion, entries }
 }

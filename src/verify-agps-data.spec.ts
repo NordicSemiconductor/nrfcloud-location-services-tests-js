@@ -1,4 +1,3 @@
-import { isRight, Left, Right } from 'fp-ts/lib/Either'
 import * as fs from 'fs'
 import * as path from 'path'
 import { AGPSType, DataGram, SCHEMA_VERSION, verify } from './verify-agps-data'
@@ -39,15 +38,12 @@ describe('verify', () => {
 		const res = verify(
 			fs.readFileSync(path.join(process.cwd(), 'test-data', file)),
 		)
-		expect((res as Left<any>).left).toBeUndefined()
-		expect(isRight(res)).toEqual(true)
+		expect('error' in res).toEqual(false)
 		expect(
-			(
-				res as Right<{
-					schemaVersion: number
-					entries: DataGram[]
-				}>
-			).right,
+			res as {
+				schemaVersion: number
+				entries: DataGram[]
+			},
 		).toMatchObject(expected)
 	})
 
@@ -57,7 +53,7 @@ describe('verify', () => {
 			const res = verify(
 				fs.readFileSync(path.join(process.cwd(), 'test-data', file)),
 			)
-			expect((res as Left<any>).left).toBeDefined()
+			expect('error' in res).toEqual(true)
 		},
 	)
 })

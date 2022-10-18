@@ -1,4 +1,3 @@
-import { isRight, Right } from 'fp-ts/lib/Either'
 import { AGPSMessage, SCHEMA_VERSION, verify } from '../src/verify-agps-data'
 import { apiClient, tokenAuthorization } from './api-client'
 
@@ -45,9 +44,8 @@ describe('AGPS', () => {
 
 				// Verify response
 				const verified = verify(res)
-				expect(isRight(verified)).toEqual(true)
-				const m = (verified as Right<AGPSMessage>).right
-				expect(m.schemaVersion).toEqual(SCHEMA_VERSION)
+				expect('error' in verified).toEqual(false)
+				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
 			})
 
 			it('should chunk large responses', async () => {
@@ -70,12 +68,11 @@ describe('AGPS', () => {
 
 				// Verify response
 				const verified = verify(res)
-				expect(isRight(verified)).toEqual(true)
-				const m = (verified as Right<AGPSMessage>).right
-				expect(m.schemaVersion).toEqual(SCHEMA_VERSION)
-				expect(m.entries).toHaveLength(1)
-				expect(m.entries[0].type).toEqual(2)
-				expect(m.entries[0].items).toBeGreaterThan(0)
+				expect('error' in verified).toEqual(false)
+				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
+				expect((verified as AGPSMessage).entries).toHaveLength(1)
+				expect((verified as AGPSMessage).entries[0].type).toEqual(2)
+				expect((verified as AGPSMessage).entries[0].items).toBeGreaterThan(0)
 			})
 		})
 	})
@@ -112,12 +109,11 @@ describe('AGPS', () => {
 
 				// Verify response
 				const verified = verify(res)
-				expect(isRight(verified)).toEqual(true)
-				const m = (verified as Right<AGPSMessage>).right
-				expect(m.schemaVersion).toEqual(SCHEMA_VERSION)
-				expect(m.entries).toHaveLength(1)
-				expect(m.entries[0].type).toEqual(type)
-				expect(m.entries[0].items).toBeGreaterThan(0)
+				expect('error' in verified).toEqual(false)
+				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
+				expect((verified as AGPSMessage).entries).toHaveLength(1)
+				expect((verified as AGPSMessage).entries[0].type).toEqual(type)
+				expect((verified as AGPSMessage).entries[0].items).toBeGreaterThan(0)
 			},
 		)
 	})
@@ -152,10 +148,11 @@ describe('AGPS', () => {
 
 		// Verify response
 		const verified = verify(res)
-		expect(isRight(verified)).toEqual(true)
-		const m = (verified as Right<AGPSMessage>).right
-		expect(m.schemaVersion).toEqual(SCHEMA_VERSION)
-		expect(m.entries).toHaveLength(7)
-		expect(new Set(m.entries.map(({ type }) => type))).toEqual(types)
+		expect('error' in verified).toEqual(false)
+		expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
+		expect((verified as AGPSMessage).entries).toHaveLength(7)
+		expect(
+			new Set((verified as AGPSMessage).entries.map(({ type }) => type)),
+		).toEqual(types)
 	})
 })
