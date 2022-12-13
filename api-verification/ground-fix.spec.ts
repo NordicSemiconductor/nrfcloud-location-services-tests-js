@@ -29,6 +29,14 @@ declare global {
 	}
 }
 
+/**
+ * Used to dynamically load a JSON file.
+ */
+const load = async (filename: string) => {
+	const mod = await import(filename)
+	return mod.default
+}
+
 expect.extend({
 	toMatchLocation: (
 		{ uncertainty, lat, lon }: Location,
@@ -106,7 +114,7 @@ describe('ground fix services', () => {
 			],
 		])('should resolve %s to %j', async (file, expectedLocation) => {
 			const filename = path.join(process.cwd(), 'test-data', file)
-			const payload = await import(filename).then((module) => module.default)
+			const payload = await load(filename)
 			expect(
 				await post({ resource: 'location/ground-fix', payload }),
 			).toMatchLocation(expectedLocation)
@@ -118,7 +126,7 @@ describe('ground fix services', () => {
 				'test-data',
 				'mcellpayload5.json',
 			)
-			const payload = await import(filename).then((module) => module.default)
+			const payload = await load(filename)
 			await expect(
 				post({
 					resource: 'location/ground-fix',
@@ -140,7 +148,7 @@ describe('ground fix services', () => {
 			],
 		])('should resolve %j to %j', async (file, expectedLocation) => {
 			const filename = path.join(process.cwd(), 'test-data', file)
-			const payload = await import(filename).then((module) => module.default)
+			const payload = await load(filename)
 			expect(
 				await post({
 					resource: 'location/ground-fix',
@@ -170,7 +178,7 @@ describe('ground fix services', () => {
 			],
 		])('should resolve %s to %j', async (file, expectedLocation) => {
 			const filename = path.join(process.cwd(), 'test-data', file)
-			const payload = await import(filename).then((module) => module.default)
+			const payload = await load(filename)
 			expect(
 				await post({ resource: 'location/ground-fix', payload }),
 			).toMatchLocation(expectedLocation)
