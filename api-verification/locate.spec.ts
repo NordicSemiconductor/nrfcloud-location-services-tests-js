@@ -1,6 +1,5 @@
 import * as path from 'path'
 import { apiClient, tokenAuthorization } from './api-client'
-import { readJsonFile } from './utils'
 
 const { post } = apiClient({
 	endpoint: process.env.API_HOST,
@@ -106,16 +105,20 @@ describe('ground fix services', () => {
 				},
 			],
 		])('should resolve %s to %j', async (file, expectedLocation) => {
-			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			const filename = path.join(process.cwd(), 'test-data', file)
+			const payload = await import(filename).then((module) => module.default)
 			expect(
 				await post({ resource: 'location/ground-fix', payload }),
 			).toMatchLocation(expectedLocation)
 		})
 
 		it('should resolve this multi-cell result', async () => {
-			const payload = readJsonFile(
-				path.join(process.cwd(), 'test-data', 'mcellpayload5.json'),
+			const filename = path.join(
+				process.cwd(),
+				'test-data',
+				'mcellpayload5.json',
 			)
+			const payload = await import(filename).then((module) => module.default)
 			await expect(
 				post({
 					resource: 'location/ground-fix',
@@ -136,7 +139,8 @@ describe('ground fix services', () => {
 				},
 			],
 		])('should resolve %j to %j', async (file, expectedLocation) => {
-			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			const filename = path.join(process.cwd(), 'test-data', file)
+			const payload = await import(filename).then((module) => module.default)
 			expect(
 				await post({
 					resource: 'location/ground-fix',
@@ -165,10 +169,28 @@ describe('ground fix services', () => {
 				},
 			],
 		])('should resolve %s to %j', async (file, expectedLocation) => {
-			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			const filename = path.join(process.cwd(), 'test-data', file)
+			const payload = await import(filename).then((module) => module.default)
 			expect(
 				await post({ resource: 'location/ground-fix', payload }),
 			).toMatchLocation(expectedLocation)
+		})
+
+		it('should require at least 2 access points with MAC addresses', async () => {
+			await expect(
+				post({
+					resource: 'location/ground-fix',
+					payload: {
+						wifi: {
+							accessPoints: [
+								{
+									macAddress: '40:01:7a:c9:10:22',
+								},
+							],
+						},
+					},
+				}),
+			).rejects.toThrow('Request failed: 422')
 		})
 	})
 })
