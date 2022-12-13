@@ -8,10 +8,11 @@
 
 Tests the nRF Cloud Location services
 
-- [LOCATE](https://api.feature.nrfcloud.com/v1#operation/LocateDevice)
-- [AGPS](https://api.feature.nrfcloud.com/v1#operation/GetAssistanceData)
+- [LOCATE](https://api.nrfcloud.com/v1#tag/Cell-Location)
+- [AGPS](https://api.nrfcloud.com/v1#tag/Assisted-GPS/operation/GetAssistanceData)
   (including message validation)
-- [PGPS](https://api.feature.nrfcloud.com/v1#operation/GetPredictedAssistanceData)
+- [PGPS](https://api.nrfcloud.com/v1#tag/Predicted-GPS)
+- [WiFi](https://api.nrfcloud.com/v1#tag/Wi-Fi-Location)
 
 Configure these environment variables:
 
@@ -29,7 +30,7 @@ Then run:
 ## Authentication using Evaluation Token
 
 For evaluation purposes, users can generate an evaluation token (see the
-[nRF Cloud Location Services documentation](https://docs.nrfcloud.com/Guides/GettingStarted/LocationServices#using-rest)
+[nRF Cloud Location Services documentation](https://docs.nrfcloud.com/AccountAndTeamManagement/AuthenticationAndAuthorization/TokensAndKeys/)
 for further information.)
 
 [evaluation-token-authentication.spec.ts](./api-verification/evaluation-token-authentication.spec.ts)
