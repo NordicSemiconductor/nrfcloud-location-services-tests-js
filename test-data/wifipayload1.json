@@ -1,11 +1,13 @@
 {
-  "accessPoints": [
-    {
-      "macAddress": "40:01:7a:c9:10:22",
-      "ssid": "TnGroup"
-    },
-    {
-      "macAddress": "80:e0:1d:2a:92:f2"
-    }
-  ]
+  "wifi": {
+    "accessPoints": [
+      {
+        "macAddress": "40:01:7a:c9:10:22",
+        "ssid": "TnGroup"
+      },
+      {
+        "macAddress": "80:e0:1d:2a:92:f2"
+      }
+    ]
+  }
 }

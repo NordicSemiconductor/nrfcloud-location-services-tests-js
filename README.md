@@ -8,11 +8,11 @@
 
 Tests the nRF Cloud Location services
 
-- [LOCATE](https://api.nrfcloud.com/v1#tag/Cell-Location)
+- [LOCATE](https://api.nrfcloud.com/v1#tag/Ground-Fix)
 - [AGPS](https://api.nrfcloud.com/v1#tag/Assisted-GPS/operation/GetAssistanceData)
   (including message validation)
 - [PGPS](https://api.nrfcloud.com/v1#tag/Predicted-GPS)
-- [WiFi](https://api.nrfcloud.com/v1#tag/Wi-Fi-Location)
+- [WiFi](https://api.nrfcloud.com/v1#tag/Ground-Fix)
 
 Configure these environment variables:
 

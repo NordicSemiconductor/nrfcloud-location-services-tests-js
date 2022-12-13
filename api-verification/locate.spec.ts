@@ -1,6 +1,6 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import { apiClient, tokenAuthorization } from './api-client'
+import { readJsonFile } from './utils'
 
 const { post } = apiClient({
 	endpoint: process.env.API_HOST,
@@ -74,256 +74,101 @@ expect.extend({
 	},
 })
 
-describe('multi-cell location', () => {
-	it.each([
-		[
-			{
-				lte: [
-					{
-						mcc: 242,
-						mnc: 2,
-						eci: 33703712,
-						tac: 2305,
-						earfcn: 6300,
-						adv: 97,
-						rsrp: -97,
-						rsrq: -9,
-						nmr: [],
-					},
-				],
-			},
-			{ lat: 63.418807, lon: 10.412916, uncertainty: 2238 },
-		],
-		[
-			{
-				lte: [
-					{
-						mcc: 242,
-						mnc: 2,
-						eci: 33703712,
-						tac: 2305,
-						earfcn: 6300,
-						adv: 65535,
-						rsrp: -97,
-						rsrq: -9,
-						nmr: [
-							{
-								earfcn: 6300,
-								pci: 426,
-								rsrp: -104,
-								rsrq: -18,
-							},
-						],
-					},
-				],
-			},
-			{
-				uncertainty: 2139,
-				lat: 63.42811704,
-				lon: 10.33457279,
-			},
-		],
-		[
-			{
-				lte: [
-					{
-						mcc: 242,
-						mnc: 2,
-						eci: 33703712,
-						tac: 2305,
-						earfcn: 6300,
-						adv: 65535,
-						rsrp: -97,
-						rsrq: -9,
-						nmr: [
-							{
-								earfcn: 6300,
-								pci: 426,
-								rsrp: -104,
-								rsrq: -18,
-							},
-							{
-								earfcn: 100,
-								pci: 419,
-								rsrp: -116,
-								rsrq: -11,
-							},
-							{
-								earfcn: 1650,
-								pci: 100,
-								rsrp: -120,
-								rsrq: -9,
-							},
-							{
-								earfcn: 1650,
-								pci: 212,
-								rsrp: -123,
-								rsrq: -7,
-							},
-						],
-					},
-				],
-			},
-			{
-				uncertainty: 2139,
-				lat: 63.42811704,
-				lon: 10.33457279,
-			},
-		],
-		[
-			{
-				lte: [
-					{
-						mcc: 242,
-						mnc: 2,
-						eci: 35496972,
-						tac: 2305,
-						earfcn: 6300,
-						adv: 65535,
-						rsrp: -97,
-						rsrq: -9,
-						nmr: [
-							{
-								earfcn: 6300,
-								pci: 194,
-								rsrp: -104,
-								rsrq: -18,
-							},
-							{
-								earfcn: 6300,
-								pci: 428,
-								rsrp: -116,
-								rsrq: -11,
-							},
-							{
-								earfcn: 6300,
-								pci: 63,
-								rsrp: -120,
-								rsrq: -9,
-							},
-							{
-								earfcn: 6300,
-								pci: 140,
-								rsrp: -123,
-								rsrq: -7,
-							},
-							{
-								earfcn: 6300,
-								pci: 205,
-								rsrp: -123,
-								rsrq: -7,
-							},
-						],
-					},
-				],
-			},
-			{
-				uncertainty: 440,
-				lat: 63.42557256,
-				lon: 10.43830085,
-			},
-		],
-	])('should resolve %j to %j', async (cellTowers, expectedLocation) => {
-		expect(
-			await post({ resource: 'location/cell', payload: cellTowers }),
-		).toMatchLocation(expectedLocation)
-	})
-
-	it('should resolve this multi-cell result', async () => {
-		await expect(
-			post({
-				resource: 'location/cell',
-				payload: {
-					lte: [
-						{
-							mcc: 242,
-							mnc: 2,
-							eci: 34237195,
-							tac: 2305,
-							earfcn: 1650,
-							adv: 65535,
-							rsrp: -74,
-							rsrq: -7,
-							nmr: [
-								{
-									pci: 64,
-									rsrp: -85,
-									rsrq: -18,
-									earfcn: 1650,
-								},
-								{
-									pci: 100,
-									rsrp: -94,
-									rsrq: -26,
-									earfcn: 1650,
-								},
-								{
-									pci: 191,
-									rsrp: -95,
-									rsrq: -26,
-									earfcn: 1650,
-								},
-							],
-						},
-					],
+describe('ground fix services', () => {
+	describe('multi-cell location', () => {
+		it.each([
+			[
+				'mcellpayload1.json',
+				{ lat: 63.418807, lon: 10.412916, uncertainty: 2238 },
+			],
+			[
+				'mcellpayload2.json',
+				{
+					uncertainty: 2139,
+					lat: 63.42811704,
+					lon: 10.33457279,
 				},
-			}),
-		).resolves.not.toBeUndefined()
-	})
-})
-
-describe('single-cell location', () => {
-	it.each([
-		[
-			{
-				mcc: 242,
-				mnc: 2,
-				tac: 2305,
-				eci: 33703712,
-			},
-			{
-				uncertainty: 2416,
-				lat: 63.42373967,
-				lon: 10.38332462,
-			},
-		],
-	])('should resolve %j to %j', async (cell, expectedLocation) => {
-		expect(
-			await post({
-				resource: 'location/cell',
-				payload: {
-					lte: [cell],
+			],
+			[
+				'mcellpayload3.json',
+				{
+					uncertainty: 2139,
+					lat: 63.42811704,
+					lon: 10.33457279,
 				},
-			}),
-		).toMatchLocation(expectedLocation)
-	})
-})
-
-describe('wifi location', () => {
-	it.each([
-		[
-			'wifipayload1.json',
-			{
-				lat: 63.4214305,
-				lon: 10.437707,
-				uncertainty: 60,
-			},
-		],
-		[
-			'wifipayload2.json',
-			{
-				lat: 63.4213862,
-				lon: 10.4375898,
-				uncertainty: 14.772,
-			},
-		],
-	])('should resolve %j to %j', async (file, expectedLocation) => {
-		const data = fs.readFileSync(path.join(process.cwd(), 'test-data', file), {
-			encoding: 'utf8',
+			],
+			[
+				'mcellpayload4.json',
+				{
+					uncertainty: 440,
+					lat: 63.42557256,
+					lon: 10.43830085,
+				},
+			],
+		])('should resolve %s to %j', async (file, expectedLocation) => {
+			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			expect(
+				await post({ resource: 'location/ground-fix', payload }),
+			).toMatchLocation(expectedLocation)
 		})
-		const payload = JSON.parse(data)
-		expect(await post({ resource: 'location/wifi', payload })).toMatchLocation(
-			expectedLocation,
-		)
+
+		it('should resolve this multi-cell result', async () => {
+			const payload = readJsonFile(
+				path.join(process.cwd(), 'test-data', 'mcellpayload5.json'),
+			)
+			await expect(
+				post({
+					resource: 'location/ground-fix',
+					payload,
+				}),
+			).resolves.not.toBeUndefined()
+		})
+	})
+
+	describe('single-cell location', () => {
+		it.each([
+			[
+				'scellpayload1.json',
+				{
+					uncertainty: 2416,
+					lat: 63.42373967,
+					lon: 10.38332462,
+				},
+			],
+		])('should resolve %j to %j', async (file, expectedLocation) => {
+			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			expect(
+				await post({
+					resource: 'location/ground-fix',
+					payload,
+				}),
+			).toMatchLocation(expectedLocation)
+		})
+	})
+
+	describe('wifi location', () => {
+		it.each([
+			[
+				'wifipayload1.json',
+				{
+					lat: 63.4214305,
+					lon: 10.437707,
+					uncertainty: 60,
+				},
+			],
+			[
+				'wifipayload2.json',
+				{
+					lat: 63.4213862,
+					lon: 10.4375898,
+					uncertainty: 14.772,
+				},
+			],
+		])('should resolve %s to %j', async (file, expectedLocation) => {
+			const payload = readJsonFile(path.join(process.cwd(), 'test-data', file))
+			expect(
+				await post({ resource: 'location/ground-fix', payload }),
+			).toMatchLocation(expectedLocation)
+		})
 	})
 })
