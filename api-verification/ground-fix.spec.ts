@@ -4,7 +4,7 @@ import { apiClient, tokenAuthorization } from './api-client'
 const { post } = apiClient({
 	endpoint: process.env.API_HOST,
 	authorizationToken: tokenAuthorization({
-		tokenKey: process.env.CELLGEO_SERVICE_KEY ?? '',
+		tokenKey: process.env.GROUNDFIX_SERVICE_KEY ?? '',
 		tokenPayload: {
 			aud: process.env.TEAM_ID,
 		},

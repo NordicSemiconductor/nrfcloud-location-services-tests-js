@@ -18,7 +18,7 @@ Configure these environment variables:
 - `TEAM_ID`
 - `AGPS_SERVICE_KEY`
 - `PGPS_SERVICE_KEY`
-- `CELLGEO_SERVICE_KEY`
+- `GROUNDFIX_SERVICE_KEY`
 
 Then run:
 

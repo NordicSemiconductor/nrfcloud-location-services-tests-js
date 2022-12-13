@@ -11,7 +11,7 @@ env:
   TEAM_ID: ${{ secrets.TEAM_ID }}
   AGPS_SERVICE_KEY: ${{ secrets.AGPS_SERVICE_KEY }}
   PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}
-  CELLGEO_SERVICE_KEY: ${{ secrets.CELLGEO_SERVICE_KEY }}
+  GROUNDFIX_SERVICE_KEY: ${{ secrets.GROUNDFIX_SERVICE_KEY }}
   API_KEY: ${{ secrets.API_KEY }}
   EVALUATION_TOKEN: ${{ secrets.EVALUATION_TOKEN }}
 
@@ -36,8 +36,8 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci
       - run: npx jest pgps.spec.ts
-  cellgeo:
-    name: Cell Geolocation Service API verification tests
+  groundfix:
+    name: Ground Fix Services API verification tests
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-node@v3
