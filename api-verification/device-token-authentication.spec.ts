@@ -25,7 +25,7 @@ describe('authenticate using device keys', () => {
 			const openssl = spawn('openssl', [
 				'ecparam',
 				'-name',
-				'secp256k1',
+				'prime256v1',
 				'-genkey',
 			])
 			const res: string[] = []
