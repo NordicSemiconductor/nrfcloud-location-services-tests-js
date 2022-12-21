@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
+import { randomUUID } from 'node:crypto'
 import * as os from 'os'
-import { v4 } from 'uuid'
 import { apiClient, tokenAuthorization } from './api-client'
 
 const endpoint = process.env.API_HOST
@@ -18,7 +18,7 @@ describe('authenticate using device keys', () => {
 
 	beforeAll(async () => {
 		// Generate a globally uniqe device ID
-		deviceId = v4()
+		deviceId = randomUUID()
 
 		// Generate a key for the device
 		privateKey = await new Promise<string>((resolve, reject) => {
