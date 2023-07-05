@@ -85,6 +85,6 @@
     "testRegex": "(src|api-verification)\\/.+\\.spec\\.ts$"
   },
   "dependencies": {
-    "jsonwebtoken": "9.0.0"
+    "jsonwebtoken": "9.0.1"
   }
 }
