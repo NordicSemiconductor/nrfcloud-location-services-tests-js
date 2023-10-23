@@ -20,7 +20,7 @@ jobs:
     name: A-GPS Service API verification tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -30,7 +30,7 @@ jobs:
     name: P-GPS Service API verification tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -40,7 +40,7 @@ jobs:
     name: Ground Fix Services API verification tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -50,7 +50,7 @@ jobs:
     name: Evaluation Token Authentication verification tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
         if: env.EVALUATION_TOKEN != ''
@@ -64,7 +64,7 @@ jobs:
     name: Device Token Authentication verification tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
