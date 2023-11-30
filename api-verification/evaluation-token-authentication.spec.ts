@@ -1,4 +1,6 @@
-import { apiClient } from './api-client'
+import { apiClient } from './api-client.js'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
 
 const endpoint = process.env.API_HOST
 
@@ -7,8 +9,8 @@ const { getJSON } = apiClient({
 	authorizationToken: process.env.EVALUATION_TOKEN as string,
 })
 
-describe('authenticate using evaluation token', () => {
-	it('should accept the evaluation token', async () => {
+void describe('authenticate using evaluation token', () => {
+	void it('should accept the evaluation token', async () => {
 		const res = await getJSON<{ host: string; path: string }>({
 			resource: 'location/pgps',
 			payload: {
@@ -16,7 +18,7 @@ describe('authenticate using evaluation token', () => {
 				predictionIntervalMinutes: 120,
 			},
 		})
-		expect(res.host).not.toBeUndefined()
-		expect(res.path).not.toBeUndefined()
+		assert.notEqual(res.host, undefined)
+		assert.notEqual(res.path, undefined)
 	})
 })

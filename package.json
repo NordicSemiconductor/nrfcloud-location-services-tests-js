@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
-    "test": "jest src",
+    "test": "npx tsx --test ./src/*.spec.ts",
     "prepare": "husky install"
   },
   "repository": {
@@ -26,12 +26,16 @@
   "devDependencies": {
     "@commitlint/config-conventional": "18.4.3",
     "@nordicsemiconductor/asset-tracker-cloud-code-style": "13.0.0",
-    "@swc/jest": "0.2.29",
-    "@types/jest": "29.5.10",
+    "@nordicsemiconductor/eslint-config-asset-tracker-cloud-typescript": "17.0.0",
     "@types/jsonwebtoken": "9.0.5",
     "@types/node": "20.10.1",
-    "jest": "29.7.0",
-    "ts-loader": "9.5.1"
+    "@typescript-eslint/eslint-plugin": "6.13.1",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-import": "2.29.0",
+    "eslint-plugin-prefer-arrow": "1.2.3",
+    "eslint-plugin-unicorn": "49.0.0",
+    "ts-loader": "9.5.1",
+    "tsx": "4.6.1"
   },
   "lint-staged": {
     "*.ts": [
@@ -77,14 +81,6 @@
     "LICENSE",
     "README.md"
   ],
-  "jest": {
-    "transform": {
-      "^.+\\.(t|j)sx?$": [
-        "@swc/jest"
-      ]
-    },
-    "testRegex": "(src|api-verification)\\/.+\\.spec\\.ts$"
-  },
   "dependencies": {
     "jsonwebtoken": "9.0.2"
   }

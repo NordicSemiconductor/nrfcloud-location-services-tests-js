@@ -1,6 +1,8 @@
 import { IncomingHttpHeaders } from 'http'
 import * as https from 'https'
-import { apiClient, tokenAuthorization } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client.js'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
 
 const { getJSON } = apiClient({
 	endpoint: process.env.API_HOST,
@@ -12,8 +14,8 @@ const { getJSON } = apiClient({
 	}),
 })
 
-describe('PGPS', () => {
-	it('should return predicted assistance GPS data', async () => {
+void describe('PGPS', () => {
+	void it('should return predicted assistance GPS data', async () => {
 		const res = await getJSON<{ host: string; path: string }>({
 			resource: 'location/pgps',
 			payload: {
@@ -21,8 +23,8 @@ describe('PGPS', () => {
 				predictionIntervalMinutes: 120,
 			},
 		})
-		expect(res.host).not.toBeUndefined()
-		expect(res.path).not.toBeUndefined()
+		assert.notEqual(res.host, undefined)
+		assert.notEqual(res.path, undefined)
 
 		const dl = await new Promise<{
 			statusCode?: number
@@ -41,8 +43,8 @@ describe('PGPS', () => {
 				})
 				.on('error', reject),
 		)
-		expect(dl.statusCode).toEqual(200)
-		expect(dl.headers).toMatchObject({
+		assert.equal(dl.statusCode, 200)
+		assert.deepEqual(dl.headers, {
 			'content-type': 'application/octet-stream',
 		})
 	})

@@ -25,7 +25,7 @@ jobs:
           node-version: "20.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
-      - run: npx jest agps.spec.ts
+      - run: npx tsx --test ./api-verification/agps.spec.ts
   pgps:
     name: P-GPS Service API verification tests
     runs-on: ubuntu-22.04
@@ -35,7 +35,7 @@ jobs:
           node-version: "20.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
-      - run: npx jest pgps.spec.ts
+      - run: npx tsx --test ./api-verification/pgps.spec.ts
   groundfix:
     name: Ground Fix Services API verification tests
     runs-on: ubuntu-22.04
@@ -45,7 +45,7 @@ jobs:
           node-version: "20.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
-      - run: npx jest ground-fix.spec.ts
+      - run: npx tsx --test ./api-verification/ground-fix.spec.ts
   evaltoken:
     name: Evaluation Token Authentication verification tests
     runs-on: ubuntu-22.04
@@ -58,7 +58,9 @@ jobs:
         if: env.EVALUATION_TOKEN != ''
       - run: npm ci
         if: env.EVALUATION_TOKEN != ''
-      - run: npx jest evaluation-token-authentication.spec.ts
+      - run:
+          npx tsx --test
+          ./api-verification/evaluation-token-authentication.spec.ts
         if: env.EVALUATION_TOKEN != ''
   devicetoken:
     name: Device Token Authentication verification tests
@@ -69,4 +71,5 @@ jobs:
           node-version: "20.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
-      - run: npx jest device-token-authentication.spec.ts
+      - run:
+          npx tsx --test ./api-verification/device-token-authentication.spec.ts

@@ -1,7 +1,9 @@
 import { spawn } from 'child_process'
 import { randomUUID } from 'node:crypto'
 import * as os from 'os'
-import { apiClient, tokenAuthorization } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client.js'
+import { describe, it, before } from 'node:test'
+import assert from 'node:assert/strict'
 
 const endpoint = process.env.API_HOST
 
@@ -10,13 +12,13 @@ const apiKeyClient = apiClient({
 	authorizationToken: process.env.API_KEY as string,
 })
 
-describe('authenticate using device keys', () => {
+void describe('authenticate using device keys', () => {
 	let privateKey: string
 	let publicKey: string
 	let deviceId: string
 	let bulkOpsRequestId: string
 
-	beforeAll(async () => {
+	before(async () => {
 		// Generate a globally uniqe device ID
 		deviceId = randomUUID()
 
@@ -72,16 +74,16 @@ describe('authenticate using device keys', () => {
 		})
 	})
 
-	it('should register a new device key', async () => {
+	void it('should register a new device key', async () => {
 		const { bulkOpsRequestId: rid } = await apiKeyClient.postBinary({
 			resource: 'devices/public-keys',
 			payload: `${deviceId},"${publicKey}"`,
 		})
 		bulkOpsRequestId = rid
-		expect(bulkOpsRequestId).not.toBeUndefined()
+		assert.notEqual(bulkOpsRequestId, undefined)
 	})
 
-	it('should process the request', async () => {
+	void it('should process the request', async () => {
 		const getStatus = async () =>
 			apiKeyClient
 				.getJSON({
@@ -103,10 +105,10 @@ describe('authenticate using device keys', () => {
 				reject(new Error(`Timeout`))
 			}, 30000)
 		})
-		expect(status).toEqual('SUCCEEDED')
+		assert.equal(status, 'SUCCEEDED')
 	})
 
-	it('should accept the device-key based JWT', async () => {
+	void it('should accept the device-key based JWT', async () => {
 		const { getJSON } = apiClient({
 			endpoint,
 			authorizationToken: tokenAuthorization({
@@ -123,7 +125,7 @@ describe('authenticate using device keys', () => {
 				predictionIntervalMinutes: 120,
 			},
 		})
-		expect(res.host).not.toBeUndefined()
-		expect(res.path).not.toBeUndefined()
+		assert.notEqual(res.host, undefined)
+		assert.notEqual(res.path, undefined)
 	})
 })
