@@ -76,10 +76,12 @@ void describe('authenticate using device keys', () => {
 
 	void it('should register a new device key', async () => {
 		const { bulkOpsRequestId: rid } = JSON.parse(
-			await apiKeyClient.postBinary({
-				resource: 'devices/public-keys',
-				payload: `${deviceId},"${publicKey}"`,
-			}),
+			(
+				await apiKeyClient.postBinary({
+					resource: 'devices/public-keys',
+					payload: `${deviceId},"${publicKey}"`,
+				})
+			).toString('utf-8'),
 		)
 		bulkOpsRequestId = rid
 		assert.notEqual(bulkOpsRequestId, undefined)
