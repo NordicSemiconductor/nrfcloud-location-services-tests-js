@@ -1,6 +1,6 @@
 export const SCHEMA_VERSION = 1
 
-export enum AGPSType {
+export enum AGNSSType {
 	'UTC parameters' = 1,
 	'Ephemerides' = 2,
 	'Almanac' = 3,
@@ -12,17 +12,17 @@ export enum AGPSType {
 }
 
 export const datagramLength: { [type: number]: number } = {
-	[AGPSType['UTC parameters']]: 14,
-	[AGPSType.Ephemerides]: 62,
-	[AGPSType.Almanac]: 31,
-	[AGPSType['Klobuchar ionospheric correction parameters']]: 8,
-	[AGPSType['GPS time of week']]: 4,
-	[AGPSType['GPS system clock and time of week']]: 16,
-	[AGPSType['Approximate location']]: 15,
-	[AGPSType['Satellite integrity data']]: 4,
+	[AGNSSType['UTC parameters']]: 14,
+	[AGNSSType.Ephemerides]: 62,
+	[AGNSSType.Almanac]: 31,
+	[AGNSSType['Klobuchar ionospheric correction parameters']]: 8,
+	[AGNSSType['GPS time of week']]: 4,
+	[AGNSSType['GPS system clock and time of week']]: 16,
+	[AGNSSType['Approximate location']]: 15,
+	[AGNSSType['Satellite integrity data']]: 4,
 }
 
-export type AGPSMessage = {
+export type AGNSSMessage = {
 	schemaVersion: number
 	entries: DataGram[]
 }
@@ -35,7 +35,7 @@ export type DataGram = {
 export const verify = (
 	buf: Buffer,
 	debug?: (message?: any, ...optionalParams: any[]) => void,
-): { error: Error } | AGPSMessage => {
+): { error: Error } | AGNSSMessage => {
 	// First byte is schemaVersion
 	const schemaVersion = buf.readUInt8(0)
 
@@ -53,7 +53,7 @@ export const verify = (
 	while (offset <= buf.length) {
 		const type = buf.readUInt8(offset)
 		debug?.(`Read type ${type} at ${offset}`)
-		if (AGPSType[type] === undefined)
+		if (AGNSSType[type] === undefined)
 			return {
 				error: new Error(`Encountered unsupported datagram type: ${type}`),
 			}
@@ -68,7 +68,7 @@ export const verify = (
 				error: new Error(
 					`Datagram is ${
 						offset - buf.length
-					} bytes too short to contain ${numItems} items of ${AGPSType[type]}`,
+					} bytes too short to contain ${numItems} items of ${AGNSSType[type]}`,
 				),
 			}
 

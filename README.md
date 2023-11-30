@@ -15,7 +15,7 @@ Configure these environment variables:
 
 - `API_HOST` (optional, endpoint to run the tests against)
 - `TEAM_ID`
-- `AGPS_SERVICE_KEY`
+- `AGNSS_SERVICE_KEY`
 - `PGPS_SERVICE_KEY`
 - `GROUNDFIX_SERVICE_KEY`
 

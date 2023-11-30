@@ -1,1 +1,1 @@
-export * from './verify-agps-data.js'
+export * from './verify-agnss-data.js'

@@ -1,48 +1,48 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import {
-	AGPSType,
+	AGNSSType,
 	DataGram,
 	SCHEMA_VERSION,
 	verify,
-} from './verify-agps-data.js'
+} from './verify-agnss-data.js'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
 void describe('verify', () => {
 	for (const [file, expected] of [
 		[
-			'nrfc_agpspayload1.bin',
+			'nrfc_agnsspayload1.bin',
 			{
 				schemaVersion: SCHEMA_VERSION,
 				entries: [
 					{
-						type: AGPSType.Ephemerides,
+						type: AGNSSType.Ephemerides,
 						items: 30,
 					},
 				],
 			},
 		],
 		[
-			'nrfc_agpspayload2.bin',
+			'nrfc_agnsspayload2.bin',
 			{
 				schemaVersion: SCHEMA_VERSION,
 				entries: [
-					{ type: AGPSType.Almanac, items: 31 },
-					{ type: AGPSType['GPS time of week'], items: 30 },
-					{ type: AGPSType['GPS system clock and time of week'], items: 1 },
-					{ type: AGPSType['Approximate location'], items: 1 },
-					{ type: AGPSType['UTC parameters'], items: 1 },
+					{ type: AGNSSType.Almanac, items: 31 },
+					{ type: AGNSSType['GPS time of week'], items: 30 },
+					{ type: AGNSSType['GPS system clock and time of week'], items: 1 },
+					{ type: AGNSSType['Approximate location'], items: 1 },
+					{ type: AGNSSType['UTC parameters'], items: 1 },
 					{
-						type: AGPSType['Klobuchar ionospheric correction parameters'],
+						type: AGNSSType['Klobuchar ionospheric correction parameters'],
 						items: 1,
 					},
-					{ type: AGPSType['Satellite integrity data'], items: 1 },
+					{ type: AGNSSType['Satellite integrity data'], items: 1 },
 				],
 			},
 		],
 	] as [string, Record<string, unknown>][]) {
-		void it(`should verify the A-GPS message ${file} to contain ${JSON.stringify(
+		void it(`should verify the A-GNSS message ${file} to contain ${JSON.stringify(
 			expected,
 		)}`, () => {
 			const res = verify(
@@ -59,7 +59,7 @@ void describe('verify', () => {
 		})
 	}
 
-	for (const file of ['agpspayload1.bin', 'agpspayload2.bin']) {
+	for (const file of ['agnsspayload1.bin', 'agnsspayload2.bin']) {
 		void it(`should not verify ${file}`, () => {
 			const res = verify(
 				fs.readFileSync(path.join(process.cwd(), 'test-data', file)),

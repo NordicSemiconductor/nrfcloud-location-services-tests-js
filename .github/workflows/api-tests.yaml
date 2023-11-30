@@ -9,15 +9,15 @@ on:
 env:
   API_HOST: ${{ secrets.API_HOST }}
   TEAM_ID: ${{ secrets.TEAM_ID }}
-  AGPS_SERVICE_KEY: ${{ secrets.AGPS_SERVICE_KEY }}
+  AGNSS_SERVICE_KEY: ${{ secrets.AGNSS_SERVICE_KEY }}
   PGPS_SERVICE_KEY: ${{ secrets.PGPS_SERVICE_KEY }}
   GROUNDFIX_SERVICE_KEY: ${{ secrets.GROUNDFIX_SERVICE_KEY }}
   API_KEY: ${{ secrets.API_KEY }}
   EVALUATION_TOKEN: ${{ secrets.EVALUATION_TOKEN }}
 
 jobs:
-  agps:
-    name: A-GPS Service API verification tests
+  agnss:
+    name: A-GNSS Service API verification tests
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-node@v4
@@ -25,7 +25,7 @@ jobs:
           node-version: "20.x"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
-      - run: npx tsx --test ./api-verification/agps.spec.ts
+      - run: npx tsx --test ./api-verification/agnss.spec.ts
   pgps:
     name: P-GPS Service API verification tests
     runs-on: ubuntu-22.04
