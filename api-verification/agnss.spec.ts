@@ -10,7 +10,7 @@ import assert from 'node:assert/strict'
 const { getBinary, head } = apiClient({
 	endpoint: process.env.API_HOST,
 	authorizationToken: tokenAuthorization({
-		tokenKey: process.env.AGNSS_SERVICE_KEY ?? '',
+		tokenKey: process.env.LOCATION_SERVICES_SERVICE_KEY ?? '',
 		tokenPayload: {
 			aud: process.env.TEAM_ID,
 		},
