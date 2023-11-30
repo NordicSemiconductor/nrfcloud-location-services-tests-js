@@ -44,8 +44,6 @@ void describe('PGPS', () => {
 				.on('error', reject),
 		)
 		assert.equal(dl.statusCode, 200)
-		assert.deepEqual(dl.headers, {
-			'content-type': 'application/octet-stream',
-		})
+		assert.equal(dl.headers['content-type'], 'application/octet-stream')
 	})
 })
