@@ -28,7 +28,6 @@ export const apiClient = ({
 }): {
 	head: typeof head
 	getJSON: typeof getJSON
-	getBinary: typeof getBinary
 	post: typeof post
 	postBinary: typeof postBinary
 	deleteJSON: typeof deleteJSON
@@ -89,11 +88,13 @@ export const apiClient = ({
 	const postBinary = async ({
 		resource,
 		payload,
+		headers,
 	}: {
 		resource: string
 		payload: any
+		headers?: Record<string, string>
 	}) =>
-		new Promise<Record<string, any>>((resolve, reject) => {
+		new Promise<Buffer>((resolve, reject) => {
 			const options = {
 				hostname: e.hostname,
 				port: 443,
@@ -102,14 +103,15 @@ export const apiClient = ({
 				headers: {
 					Authorization: `Bearer ${authorizationToken}`,
 					'Content-Type': 'application/octet-stream',
+					...headers,
 				},
 			}
 
 			const req = https.request(options, (res) => {
-				const response: string[] = []
+				const response: Buffer[] = []
 
 				res.on('data', (d) => {
-					response.push(d.toString())
+					response.push(d)
 				})
 
 				res.on('end', () => {
@@ -124,13 +126,13 @@ export const apiClient = ({
 							`< ${res.statusCode} ${res.statusMessage}`,
 							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
 							'<',
-							`< ${response.join('')}`,
+							`< ${Buffer.concat(response).toString('hex')}`,
 						].join('\n'),
 					)
 
 					if (!ok(res))
 						return reject(new Error(`Request failed: ${res.statusCode}`))
-					resolve(JSON.parse(response.join('')))
+					resolve(Buffer.concat(response))
 				})
 			})
 			req.on('error', reject)
@@ -228,17 +230,6 @@ export const apiClient = ({
 			debugResponse: (res: Buffer) => [`< ${res.toString('utf-8')}`],
 		}).then((res) => JSON.parse(res.toString('utf-8')))
 
-	const getBinary = async (
-		args: Pick<
-			Parameters<typeof executeGet>[0],
-			Exclude<keyof Parameters<typeof executeGet>[0], 'debugResponse'>
-		>,
-	): Promise<Buffer> =>
-		executeGet({
-			...args,
-			debugResponse: (res: Buffer) => [`< ${res.toString('hex')}`],
-		})
-
 	const head = async ({
 		resource,
 		payload,
@@ -278,7 +269,6 @@ export const apiClient = ({
 	return {
 		head,
 		getJSON,
-		getBinary,
 		post,
 		postBinary,
 		deleteJSON,
