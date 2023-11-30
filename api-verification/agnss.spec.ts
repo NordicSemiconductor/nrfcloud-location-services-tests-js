@@ -7,7 +7,7 @@ import { apiClient, tokenAuthorization } from './api-client.js'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 
-const { getBinary, head } = apiClient({
+const { postBinary, head } = apiClient({
 	endpoint: process.env.API_HOST,
 	authorizationToken: tokenAuthorization({
 		tokenKey: process.env.LOCATION_SERVICES_SERVICE_KEY ?? '',
@@ -21,12 +21,10 @@ void describe('AGNSS', () => {
 	void describe('chunking', () => {
 		void describe('use HEAD request to get response size', () => {
 			const agnssReq = {
-				deviceIdentifier: 'TestClient',
 				mcc: 242,
 				mnc: 2,
 				eci: 33703712,
 				tac: 2305,
-				requestType: 'rtAssistance',
 			}
 			let chunkSize: number
 
@@ -41,11 +39,12 @@ void describe('AGNSS', () => {
 
 			void it('should return A-GNSS data', async () => {
 				assert.equal(chunkSize > 0, true) // chunk size should have been set
-				const res = await getBinary({
+				const res = await postBinary({
 					resource: 'location/agnss',
-					payload: agnssReq,
+					payload: JSON.stringify(agnssReq),
 					headers: {
-						'Content-Type': 'application/octet-stream',
+						'Content-type': 'application/json',
+						Accept: 'application/octet-stream',
 						Range: `bytes=0-${chunkSize}`,
 					},
 				})
@@ -58,18 +57,18 @@ void describe('AGNSS', () => {
 			})
 
 			void it('should chunk large responses', async () => {
-				const res = await getBinary({
+				const res = await postBinary({
 					resource: 'location/agnss',
-					payload: {
+					payload: JSON.stringify({
 						mcc: 242,
 						mnc: 2,
 						eci: 33703712,
 						tac: 2305,
-						requestType: 'custom',
-						customTypes: 2,
-					},
+						types: [2],
+					}),
 					headers: {
-						'Content-Type': 'application/octet-stream',
+						'Content-type': 'application/json',
+						Accept: 'application/octet-stream',
 						Range: `bytes=0-2000`,
 					},
 				})
@@ -94,8 +93,7 @@ void describe('AGNSS', () => {
 					mnc: 2,
 					eci: 33703712,
 					tac: 2305,
-					requestType: 'custom',
-					customTypes: type,
+					types: [type],
 				}
 
 				const headRes = await head({
@@ -105,11 +103,12 @@ void describe('AGNSS', () => {
 				const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
 				assert.equal(chunkSize > 0, true)
 
-				const res = await getBinary({
+				const res = await postBinary({
 					resource: 'location/agnss',
-					payload: agnssReq,
+					payload: JSON.stringify(agnssReq),
 					headers: {
-						'Content-Type': 'application/octet-stream',
+						'Content-type': 'application/json',
+						Accept: 'application/octet-stream',
 						Range: `bytes=0-${chunkSize}`,
 					},
 				})
@@ -127,14 +126,13 @@ void describe('AGNSS', () => {
 	})
 
 	void it('should combine types', async () => {
-		const types = new Set([1, 3, 4, 6, 7, 8, 9])
+		const types = [1, 3, 4, 6, 7, 8, 9]
 		const agnssReq = {
 			mcc: 242,
 			mnc: 2,
 			eci: 33703712,
 			tac: 2305,
-			requestType: 'custom',
-			customTypes: [...types],
+			types,
 		}
 
 		const headRes = await head({
@@ -144,11 +142,12 @@ void describe('AGNSS', () => {
 		const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
 		assert.equal(chunkSize > 0, true)
 
-		const res = await getBinary({
+		const res = await postBinary({
 			resource: 'location/agnss',
-			payload: agnssReq,
+			payload: JSON.stringify(agnssReq),
 			headers: {
-				'Content-Type': 'application/octet-stream',
+				'Content-type': 'application/json',
+				Accept: 'application/octet-stream',
 				Range: `bytes=0-${chunkSize}`,
 			},
 		})
@@ -160,8 +159,10 @@ void describe('AGNSS', () => {
 		assert.equal((verified as AGNSSMessage).schemaVersion, SCHEMA_VERSION)
 		assert.equal((verified as AGNSSMessage).entries.length, 7)
 		assert.deepEqual(
-			new Set((verified as AGNSSMessage).entries.map(({ type }) => type)),
-			types,
+			new Set(
+				((verified as AGNSSMessage).entries as any[]).map(({ type }) => type),
+			),
+			new Set(types),
 		)
 	})
 })
