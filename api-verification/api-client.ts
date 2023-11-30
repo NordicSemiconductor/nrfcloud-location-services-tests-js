@@ -1,4 +1,4 @@
-import { IncomingHttpHeaders, IncomingMessage, OutgoingHttpHeaders } from 'http'
+import { IncomingMessage, OutgoingHttpHeaders } from 'http'
 import * as https from 'https'
 import * as jwt from 'jsonwebtoken'
 import { URL, URLSearchParams } from 'url'
@@ -246,38 +246,34 @@ export const apiClient = ({
 	}: {
 		resource: string
 		payload: Record<string, any>
-		headers?: OutgoingHttpHeaders
-	}) =>
-		new Promise<IncomingHttpHeaders>((resolve, reject) => {
-			const options = {
-				hostname: e.hostname,
-				port: 443,
-				path: `/v1/${resource}?${new URLSearchParams(payload).toString()}`,
-				headers: {
-					Authorization: `Bearer ${authorizationToken}`,
-					...headers,
-				},
-				method: 'HEAD',
-			}
+		headers?: Record<string, string>
+	}): Promise<Headers> => {
+		const url = new URL(
+			`https://${e.hostname}/v1/${resource}?${new URLSearchParams(
+				payload,
+			).toString()}`,
+		)
 
-			const req = https.request(options, (res) => {
-				console.debug(
-					[
-						`> HEAD https://${e.hostname}/v1/${resource}?${new URLSearchParams(
-							payload,
-						).toString()}`,
-						`< ${res.statusCode} ${res.statusMessage}`,
-						...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
-					].join('\n'),
-				)
-
-				if ((res.statusCode ?? -1) > 399)
-					return reject(new Error(`Request failed: ${res.statusCode}`))
-				return resolve(res.headers)
-			})
-			req.on('error', reject)
-			req.end()
+		const res = await fetch(url, {
+			method: 'HEAD',
+			headers: {
+				Authorization: `Bearer ${authorizationToken}`,
+				...headers,
+			},
 		})
+
+		console.debug(
+			[
+				`> HEAD ${url.toString()}`,
+				`< ${res.status} ${res.statusText}`,
+				...[...new Set(res.headers.entries())].map(([k, v]) => `< ${k}: ${v}`),
+			].join('\n'),
+		)
+
+		if ((res.status ?? -1) > 399)
+			throw new Error(`Request failed: ${res.status}`)
+		return res.headers
+	}
 
 	return {
 		head,

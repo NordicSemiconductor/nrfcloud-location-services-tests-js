@@ -90,7 +90,7 @@ void describe('ground fix services', () => {
 				},
 			],
 		] as [Record<string, unknown>, Location][]) {
-			void it(`should resolve ${payload} to ${JSON.stringify(
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
 				expectedLocation,
 			)}`, async () => {
 				matchLocation(expectedLocation)(
@@ -123,7 +123,7 @@ void describe('ground fix services', () => {
 				},
 			],
 		] as [Record<string, unknown>, Location][]) {
-			void it(`should resolve ${payload} to ${JSON.stringify(
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
 				expectedLocation,
 			)}`, async () => {
 				matchLocation(expectedLocation)(
@@ -155,7 +155,7 @@ void describe('ground fix services', () => {
 				},
 			],
 		] as [Record<string, unknown>, Location][]) {
-			void it(`should resolve ${payload} to ${JSON.stringify(
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
 				expectedLocation,
 			)}`, async () => {
 				matchLocation(expectedLocation)(

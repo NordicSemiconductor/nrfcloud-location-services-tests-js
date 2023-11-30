@@ -28,7 +28,7 @@ void describe('AGPS', () => {
 
 			void it('should describe length of A-GPS data', async () => {
 				const res = await head({ resource: 'location/agps', payload: agpsReq })
-				chunkSize = parseInt(res['content-length'] ?? '0', 10)
+				chunkSize = parseInt(res.get('content-length') ?? '0', 10)
 				assert.equal(chunkSize > 0, true)
 			})
 
@@ -95,7 +95,7 @@ void describe('AGPS', () => {
 					resource: 'location/agps',
 					payload: agpsReq,
 				})
-				const chunkSize = parseInt(headRes['content-length'] ?? '0', 10)
+				const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
 				assert.equal(chunkSize > 0, true)
 
 				const res = await getBinary({
@@ -134,7 +134,7 @@ void describe('AGPS', () => {
 			resource: 'location/agps',
 			payload: agpsReq,
 		})
-		const chunkSize = parseInt(headRes['content-length'] ?? '0', 10)
+		const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
 		assert.equal(chunkSize > 0, true)
 
 		const res = await getBinary({
