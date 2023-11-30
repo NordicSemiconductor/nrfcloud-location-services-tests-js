@@ -1,9 +1,16 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { AGPSType, DataGram, SCHEMA_VERSION, verify } from './verify-agps-data'
+import {
+	AGPSType,
+	DataGram,
+	SCHEMA_VERSION,
+	verify,
+} from './verify-agps-data.js'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
 
-describe('verify', () => {
-	it.each([
+void describe('verify', () => {
+	for (const [file, expected] of [
 		[
 			'nrfc_agpspayload1.bin',
 			{
@@ -34,26 +41,30 @@ describe('verify', () => {
 				],
 			},
 		],
-	])('should verify the A-GPS message %s to contain %o', (file, expected) => {
-		const res = verify(
-			fs.readFileSync(path.join(process.cwd(), 'test-data', file)),
-		)
-		expect('error' in res).toEqual(false)
-		expect(
-			res as {
-				schemaVersion: number
-				entries: DataGram[]
-			},
-		).toMatchObject(expected)
-	})
-
-	it.each([['agpspayload1.bin'], ['agpspayload2.bin']])(
-		'should not verify %s',
-		(file) => {
+	] as [string, Record<string, unknown>][]) {
+		void it(`should verify the A-GPS message ${file} to contain ${JSON.stringify(
+			expected,
+		)}`, () => {
 			const res = verify(
 				fs.readFileSync(path.join(process.cwd(), 'test-data', file)),
 			)
-			expect('error' in res).toEqual(true)
-		},
-	)
+			assert.equal('error' in res, false)
+			assert.deepEqual(
+				res as {
+					schemaVersion: number
+					entries: DataGram[]
+				},
+				expected,
+			)
+		})
+	}
+
+	for (const file of ['agpspayload1.bin', 'agpspayload2.bin']) {
+		void it(`should not verify ${file}`, () => {
+			const res = verify(
+				fs.readFileSync(path.join(process.cwd(), 'test-data', file)),
+			)
+			assert.equal('error' in res, true)
+		})
+	}
 })

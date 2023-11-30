@@ -1,5 +1,7 @@
-import { AGPSMessage, SCHEMA_VERSION, verify } from '../src/verify-agps-data'
-import { apiClient, tokenAuthorization } from './api-client'
+import { AGPSMessage, SCHEMA_VERSION, verify } from '../src/verify-agps-data.js'
+import { apiClient, tokenAuthorization } from './api-client.js'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
 
 const { getBinary, head } = apiClient({
 	endpoint: process.env.API_HOST,
@@ -11,9 +13,9 @@ const { getBinary, head } = apiClient({
 	}),
 })
 
-describe('AGPS', () => {
-	describe('chunking', () => {
-		describe('use HEAD request to get response size', () => {
+void describe('AGPS', () => {
+	void describe('chunking', () => {
+		void describe('use HEAD request to get response size', () => {
 			const agpsReq = {
 				deviceIdentifier: 'TestClient',
 				mcc: 242,
@@ -24,14 +26,14 @@ describe('AGPS', () => {
 			}
 			let chunkSize: number
 
-			it('should describe length of A-GPS data', async () => {
+			void it('should describe length of A-GPS data', async () => {
 				const res = await head({ resource: 'location/agps', payload: agpsReq })
-				chunkSize = parseInt(res['content-length'] ?? '0', 10)
-				expect(chunkSize).toBeGreaterThan(0)
+				chunkSize = parseInt(res.get('content-length') ?? '0', 10)
+				assert.equal(chunkSize > 0, true)
 			})
 
-			it('should return A-GPS data', async () => {
-				expect(chunkSize).toBeGreaterThan(0) // chunk size should have been set
+			void it('should return A-GPS data', async () => {
+				assert.equal(chunkSize > 0, true) // chunk size should have been set
 				const res = await getBinary({
 					resource: 'location/agps',
 					payload: agpsReq,
@@ -40,15 +42,15 @@ describe('AGPS', () => {
 						Range: `bytes=0-${chunkSize}`,
 					},
 				})
-				expect(res.length).toBe(chunkSize)
+				assert.equal(res.length, chunkSize)
 
 				// Verify response
 				const verified = verify(res)
-				expect('error' in verified).toEqual(false)
-				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
+				assert.equal('error' in verified, false)
+				assert.equal((verified as AGPSMessage).schemaVersion, SCHEMA_VERSION)
 			})
 
-			it('should chunk large responses', async () => {
+			void it('should chunk large responses', async () => {
 				const res = await getBinary({
 					resource: 'location/agps',
 					payload: {
@@ -64,23 +66,22 @@ describe('AGPS', () => {
 						Range: `bytes=0-2000`,
 					},
 				})
-				expect(res.length).toBeLessThan(2000)
+				assert.equal(res.length < 2000, true)
 
 				// Verify response
 				const verified = verify(res)
-				expect('error' in verified).toEqual(false)
-				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
-				expect((verified as AGPSMessage).entries).toHaveLength(1)
-				expect((verified as AGPSMessage).entries[0].type).toEqual(2)
-				expect((verified as AGPSMessage).entries[0].items).toBeGreaterThan(0)
+				assert.equal('error' in verified, false)
+				assert.equal((verified as AGPSMessage).schemaVersion, SCHEMA_VERSION)
+				assert.equal((verified as AGPSMessage).entries.length, 1)
+				assert.equal((verified as AGPSMessage).entries[0].type, 2)
+				assert.equal((verified as AGPSMessage).entries[0].items > 0, true)
 			})
 		})
 	})
 
-	describe('should support 8 types', () => {
-		it.each([[1], [2], [3], [4], [6], [7], [8], [9]])(
-			'should resolve custom type %d',
-			async (type) => {
+	void describe('should support 8 types', () => {
+		for (const type of [1, 2, 3, 4, 6, 7, 8, 9]) {
+			void it(`should resolve custom type ${type}`, async () => {
 				const agpsReq = {
 					mcc: 242,
 					mnc: 2,
@@ -94,8 +95,8 @@ describe('AGPS', () => {
 					resource: 'location/agps',
 					payload: agpsReq,
 				})
-				const chunkSize = parseInt(headRes['content-length'] ?? '0', 10)
-				expect(chunkSize).toBeGreaterThan(0)
+				const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
+				assert.equal(chunkSize > 0, true)
 
 				const res = await getBinary({
 					resource: 'location/agps',
@@ -105,20 +106,20 @@ describe('AGPS', () => {
 						Range: `bytes=0-${chunkSize}`,
 					},
 				})
-				expect(res.length).toEqual(chunkSize)
+				assert.equal(res.length, chunkSize)
 
 				// Verify response
 				const verified = verify(res)
-				expect('error' in verified).toEqual(false)
-				expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
-				expect((verified as AGPSMessage).entries).toHaveLength(1)
-				expect((verified as AGPSMessage).entries[0].type).toEqual(type)
-				expect((verified as AGPSMessage).entries[0].items).toBeGreaterThan(0)
-			},
-		)
+				assert.equal('error' in verified, false)
+				assert.equal((verified as AGPSMessage).schemaVersion, SCHEMA_VERSION)
+				assert.equal((verified as AGPSMessage).entries.length, 1)
+				assert.equal((verified as AGPSMessage).entries[0].type, type)
+				assert.equal((verified as AGPSMessage).entries[0].items > 0, true)
+			})
+		}
 	})
 
-	it('should combine types', async () => {
+	void it('should combine types', async () => {
 		const types = new Set([1, 3, 4, 6, 7, 8, 9])
 		const agpsReq = {
 			mcc: 242,
@@ -133,8 +134,8 @@ describe('AGPS', () => {
 			resource: 'location/agps',
 			payload: agpsReq,
 		})
-		const chunkSize = parseInt(headRes['content-length'] ?? '0', 10)
-		expect(chunkSize).toBeGreaterThan(0)
+		const chunkSize = parseInt(headRes.get('content-length') ?? '0', 10)
+		assert.equal(chunkSize > 0, true)
 
 		const res = await getBinary({
 			resource: 'location/agps',
@@ -144,15 +145,16 @@ describe('AGPS', () => {
 				Range: `bytes=0-${chunkSize}`,
 			},
 		})
-		expect(res.length).toEqual(chunkSize)
+		assert.equal(res.length, chunkSize)
 
 		// Verify response
 		const verified = verify(res)
-		expect('error' in verified).toEqual(false)
-		expect((verified as AGPSMessage).schemaVersion).toEqual(SCHEMA_VERSION)
-		expect((verified as AGPSMessage).entries).toHaveLength(7)
-		expect(
+		assert.equal('error' in verified, false)
+		assert.equal((verified as AGPSMessage).schemaVersion, SCHEMA_VERSION)
+		assert.equal((verified as AGPSMessage).entries.length, 7)
+		assert.deepEqual(
 			new Set((verified as AGPSMessage).entries.map(({ type }) => type)),
-		).toEqual(types)
+			types,
+		)
 	})
 })

@@ -7,7 +7,9 @@ import mcellpayload5 from '../test-data/mcellpayload5.json'
 import scellpayload1 from '../test-data/scellpayload1.json'
 import wifipayload1 from '../test-data/wifipayload1.json'
 import wifipayload2 from '../test-data/wifipayload2.json'
-import { apiClient, tokenAuthorization } from './api-client'
+import { apiClient, tokenAuthorization } from './api-client.js'
+import { describe, it } from 'node:test'
+import assert from 'node:assert/strict'
 
 const { post } = apiClient({
 	endpoint: process.env.API_HOST,
@@ -27,63 +29,33 @@ const inRange = (received: number, expected: number, delta = 0.5): boolean => {
 
 type Location = { uncertainty: number; lat: number; lon: number }
 
-declare global {
-	/* eslint-disable-next-line */
-	namespace jest {
-		/* eslint-disable-next-line */
-		interface Matchers<R> {
-			toMatchLocation: (expected: Location) => CustomMatcherResult
-		}
-	}
-}
-
-expect.extend({
-	toMatchLocation: (
-		{ uncertainty, lat, lon }: Location,
-		{
-			uncertainty: expectedAccuracy,
-			lat: expectedLat,
-			lon: expectedLng,
-		}: Location,
-	) => {
+const matchLocation =
+	({
+		uncertainty: expectedAccuracy,
+		lat: expectedLat,
+		lon: expectedLng,
+	}: Location) =>
+	({ uncertainty, lat, lon }: Location) => {
 		const passAccuracy = inRange(uncertainty, expectedAccuracy, 5000)
 		const passLat = inRange(lat, expectedLat)
 		const passLng = inRange(lon, expectedLng)
-		if (passAccuracy && passLat && passLng) {
-			return {
-				message: () =>
-					`expected ${JSON.stringify({
-						uncertainty,
-						lat,
-						lon,
-					})} not to match location ${JSON.stringify({
-						uncertainty: expectedAccuracy,
-						lat: expectedLat,
-						lon: expectedLng,
-					})}`,
-				pass: true,
-			}
-		} else {
-			return {
-				message: () =>
-					`expected ${JSON.stringify({
-						uncertainty,
-						lat,
-						lon,
-					})} to match location ${JSON.stringify({
-						uncertainty: expectedAccuracy,
-						lat: expectedLat,
-						lon: expectedLng,
-					})}`,
-				pass: false,
-			}
-		}
-	},
-})
+		if (passAccuracy && passLat && passLng) return
+		throw new Error(
+			`expected ${JSON.stringify({
+				uncertainty,
+				lat,
+				lon,
+			})} to match location ${JSON.stringify({
+				uncertainty: expectedAccuracy,
+				lat: expectedLat,
+				lon: expectedLng,
+			})}`,
+		)
+	}
 
-describe('ground fix services', () => {
-	describe('multi-cell location', () => {
-		it.each([
+void describe('ground fix services', () => {
+	void describe('multi-cell location', () => {
+		for (const [payload, expectedLocation] of [
 			[mcellpayload1, { lat: 63.418807, lon: 10.412916, uncertainty: 2238 }],
 			[
 				mcellpayload2,
@@ -117,23 +89,31 @@ describe('ground fix services', () => {
 					lon: 10.43830085,
 				},
 			],
-		])('should resolve %s to %j', async (payload, expectedLocation) => {
-			expect(
-				await post({ resource: 'location/ground-fix', payload }),
-			).toMatchLocation(expectedLocation)
-		})
+		] as [Record<string, unknown>, Location][]) {
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
+				expectedLocation,
+			)}`, async () => {
+				matchLocation(expectedLocation)(
+					(await post({
+						resource: 'location/ground-fix',
+						payload,
+					})) as Location,
+				)
+			})
+		}
 
-		it('should resolve this multi-cell result', async () =>
-			expect(
-				post({
+		void it('should resolve this multi-cell result', async () =>
+			assert.notEqual(
+				await post({
 					resource: 'location/ground-fix',
 					payload: mcellpayload5,
 				}),
-			).resolves.not.toBeUndefined())
+				undefined,
+			))
 	})
 
-	describe('single-cell location', () => {
-		it.each([
+	void describe('single-cell location', () => {
+		for (const [payload, expectedLocation] of [
 			[
 				scellpayload1,
 				{
@@ -142,18 +122,22 @@ describe('ground fix services', () => {
 					lon: 10.38332462,
 				},
 			],
-		])('should resolve %j to %j', async (payload, expectedLocation) =>
-			expect(
-				await post({
-					resource: 'location/ground-fix',
-					payload,
-				}),
-			).toMatchLocation(expectedLocation),
-		)
+		] as [Record<string, unknown>, Location][]) {
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
+				expectedLocation,
+			)}`, async () => {
+				matchLocation(expectedLocation)(
+					(await post({
+						resource: 'location/ground-fix',
+						payload,
+					})) as Location,
+				)
+			})
+		}
 	})
 
-	describe('wifi location', () => {
-		it.each([
+	void describe('wifi location', () => {
+		for (const [payload, expectedLocation] of [
 			[
 				wifipayload1,
 				{
@@ -170,14 +154,21 @@ describe('ground fix services', () => {
 					uncertainty: 14.772,
 				},
 			],
-		])('should resolve %s to %j', async (payload, expectedLocation) => {
-			expect(
-				await post({ resource: 'location/ground-fix', payload }),
-			).toMatchLocation(expectedLocation)
-		})
+		] as [Record<string, unknown>, Location][]) {
+			void it(`should resolve ${JSON.stringify(payload)} to ${JSON.stringify(
+				expectedLocation,
+			)}`, async () => {
+				matchLocation(expectedLocation)(
+					(await post({
+						resource: 'location/ground-fix',
+						payload,
+					})) as Location,
+				)
+			})
+		}
 
-		it('should require at least 2 access points with MAC addresses', async () =>
-			expect(
+		void it('should require at least 2 access points with MAC addresses', async () =>
+			assert.rejects(
 				post({
 					resource: 'location/ground-fix',
 					payload: {
@@ -190,6 +181,7 @@ describe('ground fix services', () => {
 						},
 					},
 				}),
-			).rejects.toThrow('Request failed: 422'))
+				/Request failed: 422/,
+			))
 	})
 })
