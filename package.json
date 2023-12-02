@@ -35,7 +35,7 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-unicorn": "49.0.0",
     "ts-loader": "9.5.1",
-    "tsx": "4.6.1"
+    "tsx": "4.6.2"
   },
   "lint-staged": {
     "*.ts": [
