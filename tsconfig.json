@@ -1,9 +1,0 @@
-{
-  "extends": "@nordicsemiconductor/asset-tracker-cloud-code-style/tsconfig.json",
-  "include": ["src/*.ts", "api-verification/*.ts"],
-  "compilerOptions": {
-    "outDir": "dist/",
-    "resolveJsonModule": true,
-    "esModuleInterop": true
-  }
-}
