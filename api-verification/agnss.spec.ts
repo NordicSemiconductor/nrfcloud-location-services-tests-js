@@ -79,8 +79,11 @@ void describe('AGNSS', () => {
 				assert.equal('error' in verified, false)
 				assert.equal((verified as AGNSSMessage).schemaVersion, SCHEMA_VERSION)
 				assert.equal((verified as AGNSSMessage).entries.length, 1)
-				assert.equal((verified as AGNSSMessage).entries[0].type, 2)
-				assert.equal((verified as AGNSSMessage).entries[0].items > 0, true)
+				assert.equal((verified as AGNSSMessage).entries[0]?.type, 2)
+				assert.equal(
+					(verified as AGNSSMessage).entries[0]?.items ?? 0 > 0,
+					true,
+				)
 			})
 		})
 	})
@@ -119,8 +122,11 @@ void describe('AGNSS', () => {
 				assert.equal('error' in verified, false)
 				assert.equal((verified as AGNSSMessage).schemaVersion, SCHEMA_VERSION)
 				assert.equal((verified as AGNSSMessage).entries.length, 1)
-				assert.equal((verified as AGNSSMessage).entries[0].type, type)
-				assert.equal((verified as AGNSSMessage).entries[0].items > 0, true)
+				assert.equal((verified as AGNSSMessage).entries[0]?.type, type)
+				assert.equal(
+					(verified as AGNSSMessage).entries[0]?.items ?? 0 > 0,
+					true,
+				)
 			})
 		}
 	})

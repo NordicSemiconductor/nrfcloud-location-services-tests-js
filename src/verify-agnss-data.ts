@@ -53,15 +53,15 @@ export const verify = (
 	while (offset <= buf.length) {
 		const type = buf.readUInt8(offset)
 		debug?.(`Read type ${type} at ${offset}`)
-		if (AGNSSType[type] === undefined)
+		const len = datagramLength[type]
+		if (AGNSSType[type] === undefined || len === undefined)
 			return {
 				error: new Error(`Encountered unsupported datagram type: ${type}`),
 			}
-
 		const numItems = buf.readUInt16LE(offset + 1)
 		debug?.(`Read length ${numItems} at ${offset + 1}`)
-		offset += 3 + numItems * datagramLength[type] // Increase for datagram length
-		debug?.(`assume ${numItems * datagramLength[type]} bytes of data`)
+		offset += 3 + numItems * len // Increase for datagram length
+		debug?.(`assume ${numItems * len} bytes of data`)
 
 		if (offset > buf.length)
 			return {
