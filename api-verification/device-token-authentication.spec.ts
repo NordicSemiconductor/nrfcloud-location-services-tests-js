@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 import { randomUUID } from 'node:crypto'
-import * as os from 'os'
+import os from 'os'
 import { apiClient, tokenAuthorization } from './api-client.js'
 import { describe, it, before } from 'node:test'
 import assert from 'node:assert/strict'

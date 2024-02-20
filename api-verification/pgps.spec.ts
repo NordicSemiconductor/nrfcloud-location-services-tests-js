@@ -1,5 +1,5 @@
 import type { IncomingHttpHeaders } from 'http'
-import * as https from 'https'
+import https from 'https'
 import { apiClient, tokenAuthorization } from './api-client.js'
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'

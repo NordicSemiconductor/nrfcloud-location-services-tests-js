@@ -1,6 +1,6 @@
 import { IncomingMessage, type OutgoingHttpHeaders } from 'http'
-import * as https from 'https'
-import * as jwt from 'jsonwebtoken'
+import https from 'https'
+import jwt from 'jsonwebtoken'
 import { URL, URLSearchParams } from 'url'
 
 const token = (tokenKey: string, payload: Record<string, any>) =>
