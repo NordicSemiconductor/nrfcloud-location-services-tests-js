@@ -1,4 +1,4 @@
-import { IncomingMessage, OutgoingHttpHeaders } from 'http'
+import { IncomingMessage, type OutgoingHttpHeaders } from 'http'
 import * as https from 'https'
 import * as jwt from 'jsonwebtoken'
 import { URL, URLSearchParams } from 'url'
@@ -69,7 +69,9 @@ export const apiClient = ({
 							),
 							'',
 							`< ${res.statusCode} ${res.statusMessage}`,
-							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+							...Object.entries(res.headers).map(
+								([k, v]): string => `< ${k}: ${JSON.stringify(v)}`,
+							),
 							'<',
 							`< ${response.join('')}`,
 						].join('\n'),
@@ -124,7 +126,9 @@ export const apiClient = ({
 							),
 							'',
 							`< ${res.statusCode} ${res.statusMessage}`,
-							...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+							...Object.entries(res.headers).map(
+								([k, v]) => `< ${k}: ${JSON.stringify(v)}`,
+							),
 							'<',
 							`< ${Buffer.concat(response).toString('hex')}`,
 						].join('\n'),
@@ -186,11 +190,13 @@ export const apiClient = ({
 										: ''
 								}`,
 								...Object.entries(options.headers).map(
-									([k, v]) => `> ${k}: ${v}`,
+									([k, v]) => `> ${k}: ${JSON.stringify(v)}`,
 								),
 								'',
 								`< ${res.statusCode} ${res.statusMessage}`,
-								...Object.entries(res.headers).map(([k, v]) => `< ${k}: ${v}`),
+								...Object.entries(res.headers).map(
+									([k, v]): string => `< ${k}: ${JSON.stringify(v)}`,
+								),
 								'<',
 								...debugResponse(data),
 							].join('\n'),

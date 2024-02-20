@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import {
 	AGNSSType,
-	DataGram,
+	type DataGram,
 	SCHEMA_VERSION,
 	verify,
 } from './verify-agnss-data.js'

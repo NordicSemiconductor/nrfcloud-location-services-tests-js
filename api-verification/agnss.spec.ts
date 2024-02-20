@@ -1,5 +1,5 @@
 import {
-	AGNSSMessage,
+	type AGNSSMessage,
 	SCHEMA_VERSION,
 	verify,
 } from '../src/verify-agnss-data.js'
