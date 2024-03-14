@@ -21,6 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
       - run: npx tsx --test ./api-verification/agnss.spec.ts
@@ -31,6 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
       - run: npx tsx --test ./api-verification/pgps.spec.ts
@@ -41,6 +43,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
       - run: npx tsx --test ./api-verification/ground-fix.spec.ts
@@ -51,6 +54,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
         if: env.EVALUATION_TOKEN != ''
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         if: env.EVALUATION_TOKEN != ''
@@ -67,6 +71,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20.x"
+          cache: "npm"
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
       - run: npm ci
       - run:
