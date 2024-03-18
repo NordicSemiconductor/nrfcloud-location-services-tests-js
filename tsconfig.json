@@ -2,8 +2,8 @@
   "include": ["src/*.ts", "api-verification/*.ts"],
   "compilerOptions": {
     "target": "esnext",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "strict": true,
