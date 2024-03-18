@@ -29,7 +29,7 @@
     "@bifravst/prettier-config": "1.0.0",
     "@commitlint/config-conventional": "19.1.0",
     "@types/jsonwebtoken": "9.0.6",
-    "@types/node": "20.11.28",
+    "@types/node": "20.11.29",
     "husky": "9.0.11",
     "ts-loader": "9.5.1",
     "tsx": "4.7.1"
